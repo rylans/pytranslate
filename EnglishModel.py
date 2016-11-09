@@ -3,50 +3,135 @@ Generative model of English based on a corpus
 '''
 from nltk.corpus import gutenberg
 from nltk import ngrams
-from collections import defaultdict
+from numpy.random import choice
+import math
 
 class EnglishModel(object):
+    '''Generative model of English'''
     def __init__(self):
-        self.model_1gram = defaultdict(lambda: 1.0)
-        self.model_2gram = defaultdict(lambda: [])
-        self.model_3gram = defaultdict(lambda: [])
+        self.freq_1gram = 0
+        self.model_1gram = {}
+        self.model_2gram = {}
         self.learn_english()
 
     def learn_english(self):
-        emma = gutenberg.words('austen-emma.txt')
+        texts = []
+        texts.append(gutenberg.words('austen-emma.txt'))
 
-        emma_samples = []
-        emma_samples.append(emma[186:261])
-        emma_samples.append(emma[261:308])
-        emma_samples.append(emma[308:332])
-
-        for text in emma_samples:
+        for text in texts:
             self.learn_1grams(text)
             self.learn_2grams([gram for gram in ngrams(text, 2)])
-            self.learn_3grams([gram for gram in ngrams(text, 3)])
+
+        self.normalize_n1()
+        self.normalize_n2()
+
+    def normalize_n1(self):
+        for j in self.model_1gram.keys():
+            self.model_1gram[j] = float(self.model_1gram[j])/self.freq_1gram
+
+    def normalize_n2(self):
+        for k1 in self.model_2gram.keys():
+            k1_total = 0
+            for k2 in self.model_2gram[k1].keys():
+                k1_total += self.model_2gram[k1][k2]
+            for k2 in self.model_2gram[k1].keys():
+                self.model_2gram[k1][k2] = float(self.model_2gram[k1][k2])/k1_total
 
     def learn_1grams(self, sentence_words):
         for word in sentence_words:
-            self.model_1gram[word] += 1
+            if self.model_1gram.get(word) == None:
+                self.model_1gram[word] = 0
+            self.model_1gram[word] += 1.0
+            self.freq_1gram += 1.0
 
     def learn_2grams(self, list_of_2grams):
+        '''Learned Bigrams
+        So that
+            self.model_2gram['when'] =
+                {'the': 2.1,
+                 'our': 3.0}
+        '''
         for bigram in list_of_2grams:
-            self.model_2gram[bigram[0]] += [bigram[1]]
+            w1, w2 = bigram[0], bigram[1]
+            if self.model_2gram.get(w1) == None:
+                self.model_2gram[w1] = {}
+            if self.model_2gram[w1].get(w2) == None:
+                self.model_2gram[w1][w2] = 0
+            self.model_2gram[w1][w2] += 1.0
 
-    def learn_3grams(self, list_of_3grams):
-        for trigram in list_of_3grams:
-            self.model_3gram[trigram[:2]] += [trigram[2]]
 
-    def probability(self, word):
+    def condition_on(self, word):
+        this_dict = self.model_2gram[word]
+        items = []
+        probs = []
+        for key in this_dict.keys():
+            items.append(key)
+            probs.append(this_dict[key])
+        return items, probs
+
+    def produce(self, num_tokens):
+        items = []
+        probs = []
+        for key in self.model_1gram.keys():
+            items.append(key)
+            probs.append(self.model_1gram[key])
+
+        lastw = ''
+        production = []
+        for i in range(num_tokens):
+            if lastw == '':
+                res = choice(items, p=probs)
+                lastw = res
+            else:
+                items, probs = self.condition_on(lastw)
+                res = choice(items, p=probs)
+                lastw = res
+            production.append(res)
+        return ' '.join(production)
+
+    def probability_nocond(self, word):
         '''
         Return the probability of the word occuring.
         Probability shall never be zero
         '''
-        total_occur = 0
-        for key in self.model_1gram.keys():
-            total_occur += self.model_1gram[key]
-        freq = self.model_1gram[word]
-        return float(freq)/total_occur
+        prob = self.model_1gram.get(word)
+        if prob == None:
+            return 0.33/self.freq_1gram
+        return prob
+
+    def probability(self, word, given=''):
+        '''
+        Return the probability of the word occuring given the given word
+        Probability shall never be zero
+
+
+        p('said'|'she') = model_2gram['she']['said']/p('she') If it exists
+                        = p('said') otherwise
+
+        P(A|B) = P(A ^ B)/P(B)
+
+        p('horseback' | 'on') > p('on'| 'horseback')
+        '''
+        if given == '':
+            return self.probability_nocond(word)
+
+        pword = self.probability_nocond(word)
+        if self.model_2gram.get(given) == None:
+            return pword
+        else:
+            givenp = self.model_2gram[given].get(word)
+            if givenp == None:
+                return pword
+            return givenp
+
+    def perplexity(self, sentence_words):
+        '''calculate the perplexity of a sentence'''
+        perplexity_score = 0
+        lastword = ''
+        for word in sentence_words:
+            perplexity_score += math.log(self.probability(word, lastword), 2)
+            lastword = word
+        return -1*perplexity_score
 
 if __name__ == '__main__':
     model = EnglishModel()
@@ -54,3 +139,11 @@ if __name__ == '__main__':
     print model.probability('the')
     print model.probability('Taylor')
     print model.probability('a3nf')
+
+    print model.produce(250)
+
+    print model.perplexity(['I', 'declare', 'that'])
+    print model.perplexity(['that', 'I', 'declare'])
+    print model.perplexity(['declare', 'that', 'I'])
+    print model.perplexity(['declare', 'I', 'that'])
+    print model.perplexity(['I'])
