@@ -25,14 +25,19 @@ class TestEnglishModel(unittest.TestCase):
         self.assertTrue(p_asdf_qwer > 0)
 
     def test_word_order_probability1(self):
-        p_on_horseback = self.english.probability('horseback', 'on')
-        p_horseback_on = self.english.probability('on', 'horseback')
-        self.assertTrue(p_on_horseback > p_horseback_on)
+        p_much_more = self.english.probability('more', 'much')
+        p_more_much = self.english.probability('much', 'more')
+        self.assertTrue(p_much_more > p_more_much)
 
     def test_word_order_probability2(self):
         p_pretty_little = self.english.probability('little', 'pretty')
         p_little_pretty = self.english.probability('pretty', 'little')
         self.assertTrue(p_pretty_little > p_little_pretty)
+
+    def test_word_order_probability3(self):
+        p_his_wife = self.english.probability('wife', 'his')
+        p_wife_his = self.english.probability('his', 'wife')
+        self.assertTrue(p_his_wife > p_wife_his)
 
     def test_perplexity_score_increases(self):
         px_I = self.english.perplexity(['I'])
@@ -45,6 +50,23 @@ class TestEnglishModel(unittest.TestCase):
         px_declare_I_that = self.english.perplexity(['declare', 'I', 'that'])
         self.assertTrue(px_that_I_declare < px_declare_I_that)
         self.assertTrue(px_I_declare_that < px_that_I_declare)
+
+    def test_perplexity_reduced_with_better_grammar2(self):
+        px_said_the_woman = self.english.perplexity(['said', 'the', 'woman'])
+        px_the_woman_said = self.english.perplexity(['the', 'woman', 'said'])
+        px_the_said_woman = self.english.perplexity(['the', 'said', 'woman'])
+        self.assertTrue(px_the_said_woman > px_said_the_woman)
+        self.assertTrue(px_the_said_woman > px_the_woman_said)
+
+    def test_perplexity_reduced_with_frequency1(self):
+        px_his_wife = self.english.perplexity(['his', 'wife'])
+        px_her_wife = self.english.perplexity(['her', 'wife'])
+        self.assertTrue(px_her_wife > px_his_wife)
+
+    def test_average_perplexity_reduces(self):
+        px_we_agreed_to = self.english.avg_perplexity(['we', 'agreed', 'to'])
+        px_we_to = self.english.avg_perplexity(['we', 'to'])
+        self.assertTrue(px_we_to > px_we_agreed_to)
 
 if __name__ == '__main__':
     unittest.main()

@@ -15,8 +15,17 @@ class EnglishModel(object):
         self.learn_english()
 
     def learn_english(self):
+        '''
+        Learn unigrams and bigrams from the English corpus
+        '''
         texts = []
         texts.append(gutenberg.words('austen-emma.txt'))
+        texts.append(gutenberg.words('austen-persuasion.txt'))
+        texts.append(gutenberg.words('austen-sense.txt'))
+        texts.append(gutenberg.words('chesterton-thursday.txt'))
+        texts.append(gutenberg.words('chesterton-brown.txt'))
+        texts.append(gutenberg.words('whitman-leaves.txt'))
+        texts.append(gutenberg.words('melville-moby_dick.txt'))
 
         for text in texts:
             self.learn_1grams(text)
@@ -58,7 +67,6 @@ class EnglishModel(object):
             if self.model_2gram[w1].get(w2) == None:
                 self.model_2gram[w1][w2] = 0
             self.model_2gram[w1][w2] += 1.0
-
 
     def condition_on(self, word):
         this_dict = self.model_2gram[word]
@@ -133,17 +141,26 @@ class EnglishModel(object):
             lastword = word
         return -1*perplexity_score
 
+    def avg_perplexity(self, sentence_words):
+        length = len(sentence_words)
+        return self.perplexity(sentence_words)/length
+
 if __name__ == '__main__':
     model = EnglishModel()
 
-    print model.probability('the')
-    print model.probability('Taylor')
-    print model.probability('a3nf')
+    print
+    sentence1 = ['his', 'wife', 'said']
+    print sentence1
+    print model.avg_perplexity(sentence1)
 
-    print model.produce(250)
+    print
+    sentence2 = ['her', 'wife', 'said']
+    print sentence2
+    print model.avg_perplexity(sentence2)
 
-    print model.perplexity(['I', 'declare', 'that'])
-    print model.perplexity(['that', 'I', 'declare'])
-    print model.perplexity(['declare', 'that', 'I'])
-    print model.perplexity(['declare', 'I', 'that'])
-    print model.perplexity(['I'])
+    print
+    sentence3 = ['his', 'wife', 'gone']
+    print sentence3
+    print model.avg_perplexity(sentence3)
+
+    print model.produce(30)
