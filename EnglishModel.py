@@ -14,6 +14,18 @@ class EnglishModel(object):
         self.model_2gram = {}
         self.learn_english()
 
+    def summary(self):
+        print "seen " + str(self.freq_1gram) + " words."
+        print "seen " + str(len(self.model_1gram.keys())) + " unique words."
+
+        p_she = self.probability('she')
+        p_hoped = self.probability('hoped')
+        p_hoped_given_she = self.probability('hoped', 'she')
+        print 'p(she)= ' + str(p_she)
+        print 'p(hoped)= ' + str(p_hoped)
+        print 'p(hoped | she)= ' + str(p_hoped_given_she)
+        print 'p(she hoped) = p(hoped|she)*p(she) = ' + str(p_hoped_given_she * p_she)
+
     def learn_english(self):
         '''
         Learn unigrams and bigrams from the English corpus
@@ -35,10 +47,23 @@ class EnglishModel(object):
         self.normalize_n2()
 
     def normalize_n1(self):
+        '''Normalize all probabilities in the unigram model
+
+        Turns the frequencies into probabilities that sum to 1.0
+
+        Results in a dict such that unigram_model['brother'] = p('brother')
+        '''
         for j in self.model_1gram.keys():
             self.model_1gram[j] = float(self.model_1gram[j])/self.freq_1gram
 
     def normalize_n2(self):
+        '''Normalize all probabilities in the bigram model
+
+        Turns the frequencies into probabilities such that
+        the probabilities of bigram_model[word] sum to 1.0
+
+        The result is that bigram_model['her']['brother'] = p('brother'|'her')
+        '''
         for k1 in self.model_2gram.keys():
             k1_total = 0
             for k2 in self.model_2gram[k1].keys():
@@ -54,12 +79,6 @@ class EnglishModel(object):
             self.freq_1gram += 1.0
 
     def learn_2grams(self, list_of_2grams):
-        '''Learned Bigrams
-        So that
-            self.model_2gram['when'] =
-                {'the': 2.1,
-                 'our': 3.0}
-        '''
         for bigram in list_of_2grams:
             w1, w2 = bigram[0], bigram[1]
             if self.model_2gram.get(w1) == None:
@@ -100,7 +119,10 @@ class EnglishModel(object):
     def probability_nocond(self, word):
         '''
         Return the probability of the word occuring.
-        Probability shall never be zero
+
+        The probability shall never be zero and the probability
+        of a word that has never been seen is one third of the reciprocal
+        of the number of words that have been seen.
         '''
         prob = self.model_1gram.get(word)
         if prob == None:
@@ -109,16 +131,9 @@ class EnglishModel(object):
 
     def probability(self, word, given=''):
         '''
-        Return the probability of the word occuring given the given word
-        Probability shall never be zero
+        Return the probability of the word occuring given the previous word
 
-
-        p('said'|'she') = model_2gram['she']['said']/p('she') If it exists
-                        = p('said') otherwise
-
-        P(A|B) = P(A ^ B)/P(B)
-
-        p('horseback' | 'on') > p('on'| 'horseback')
+        The probability shall never be zero
         '''
         if given == '':
             return self.probability_nocond(word)
@@ -129,7 +144,7 @@ class EnglishModel(object):
         else:
             givenp = self.model_2gram[given].get(word)
             if givenp == None:
-                return pword
+                return 0.33 / (1 + len(self.model_2gram[given].keys()))
             return givenp
 
     def perplexity(self, sentence_words):
@@ -142,25 +157,14 @@ class EnglishModel(object):
         return -1*perplexity_score
 
     def avg_perplexity(self, sentence_words):
+        '''Return the average perplexiy of a sentence
+
+        Returns the perplexity of the sentence divided by the number of
+        tokens in the sentence.
+        '''
         length = len(sentence_words)
         return self.perplexity(sentence_words)/length
 
 if __name__ == '__main__':
     model = EnglishModel()
-
-    print
-    sentence1 = ['his', 'wife', 'said']
-    print sentence1
-    print model.avg_perplexity(sentence1)
-
-    print
-    sentence2 = ['her', 'wife', 'said']
-    print sentence2
-    print model.avg_perplexity(sentence2)
-
-    print
-    sentence3 = ['his', 'wife', 'gone']
-    print sentence3
-    print model.avg_perplexity(sentence3)
-
-    print model.produce(30)
+    model.summary()
