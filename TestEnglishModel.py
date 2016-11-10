@@ -6,6 +6,9 @@ class TestEnglishModel(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.english = EnglishModel()
+        self.udhr_article3 = 'everyone has the right to life , liberty , and person .'.split()
+        self.udhr_article4 = 'no one shall be held in slavery or servitude .'.split()
+        self.udhr_article5 = 'no one shall be subjected to torture or to cruel , inhuman or degrading treatment .'.split()
 
     def test_probability_greater_than_zero(self):
         self.assertTrue(self.english.probability('never_occursABC123') > 0)
@@ -44,7 +47,7 @@ class TestEnglishModel(unittest.TestCase):
         px_I_declare = self.english.perplexity(['I', 'declare'])
         self.assertTrue(px_I_declare > px_I)
 
-    def test_perlexity_reduced_with_better_grammar(self):
+    def test_perplexity_reduced_with_better_grammar(self):
         px_I_declare_that = self.english.perplexity(['I', 'declare', 'that'])
         px_that_I_declare = self.english.perplexity(['that', 'I', 'declare'])
         px_declare_I_that = self.english.perplexity(['declare', 'I', 'that'])
@@ -63,10 +66,51 @@ class TestEnglishModel(unittest.TestCase):
         px_her_wife = self.english.perplexity(['her', 'wife'])
         self.assertTrue(px_her_wife > px_his_wife)
 
-    def test_average_perplexity_reduces(self):
+    def test_average_perplexity_reduces1(self):
         px_we_agreed_to = self.english.avg_perplexity(['we', 'agreed', 'to'])
         px_we_to = self.english.avg_perplexity(['we', 'to'])
         self.assertTrue(px_we_to > px_we_agreed_to)
+
+    def test_average_perplexity_reduces2(self):
+        px_on_top_of = self.english.avg_perplexity(['on', 'top', 'of'])
+        px_on_of = self.english.avg_perplexity(['on', 'of'])
+        self.assertTrue(px_on_of > px_on_top_of)
+
+    def test_average_perplexity_on_word_deletions_article3(self):
+        self.given_text_test_average_perplexity_on_word_deletions(self.udhr_article3)
+
+    def test_average_perplexity_on_word_deletions_article4(self):
+        self.given_text_test_average_perplexity_on_word_deletions(self.udhr_article4)
+
+    def test_average_perplexity_on_word_deletions_article5(self):
+        self.given_text_test_average_perplexity_on_word_deletions(self.udhr_article5)
+
+    def given_text_test_average_perplexity_on_word_deletions(self, text):
+        text = self.udhr_article4
+        px_text = self.english.avg_perplexity(text)
+        one_drop_sentences = self.drop_one_word(text)
+
+        px_count = 0
+        for sen in one_drop_sentences:
+            px_count += self.english.avg_perplexity(sen)
+        px_total_avg = px_count / len(one_drop_sentences)
+
+        self.assertTrue(px_total_avg > px_text)
+
+    def drop_one_word(self, sentence):
+        '''Return sentences with one word removed
+
+        Args:
+            sentence (list): The list of words in sentence order
+
+        Returns:
+            list: A list of partial sentences
+        '''
+        one_drop_sentences = []
+        for k in range(len(sentence) - 1):
+            sen = sentence[:k+1] + sentence[k+2:]
+            one_drop_sentences.append(sen)
+        return one_drop_sentences
 
 if __name__ == '__main__':
     unittest.main()
