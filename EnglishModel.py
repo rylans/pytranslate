@@ -8,16 +8,18 @@ import math
 
 class EnglishModel(object):
     '''Generative model of English'''
-    def __init__(self):
+    def __init__(self, gutenberg_files_to_read):
         self.freq_1gram = 0
         self.model_1gram = {}
         self.model_2gram = {}
-        self.learn_english()
+        self.model_3gram = {}
+        self.learn_english(gutenberg_files_to_read)
 
     def summary(self):
         print "seen " + str(self.freq_1gram) + " words."
         print "seen " + str(len(self.model_1gram.keys())) + " unique words."
 
+        """
         p_she = self.probability('she')
         p_hoped = self.probability('hoped')
         p_hoped_given_she = self.probability('hoped', 'she')
@@ -25,26 +27,36 @@ class EnglishModel(object):
         print 'p(hoped)= ' + str(p_hoped)
         print 'p(hoped | she)= ' + str(p_hoped_given_she)
         print 'p(she hoped) = p(hoped|she)*p(she) = ' + str(p_hoped_given_she * p_she)
+        """
 
-    def learn_english(self):
+    def learn_english(self, gutenbergs):
         '''
         Learn unigrams and bigrams from the English corpus
         '''
         texts = []
+
+        for filename in gutenbergs:
+            texts.append(gutenberg.words(filename))
+
+        '''
+        texts.append(gutenberg.words('bible-kjv.txt'))
+        texts.append(gutenberg.words('whitman-leaves.txt'))
+        texts.append(gutenberg.words('chesterton-thursday.txt'))
         texts.append(gutenberg.words('austen-emma.txt'))
         texts.append(gutenberg.words('austen-persuasion.txt'))
         texts.append(gutenberg.words('austen-sense.txt'))
-        texts.append(gutenberg.words('chesterton-thursday.txt'))
         texts.append(gutenberg.words('chesterton-brown.txt'))
-        texts.append(gutenberg.words('whitman-leaves.txt'))
         texts.append(gutenberg.words('melville-moby_dick.txt'))
+        '''
 
         for text in texts:
             self.learn_1grams(text)
             self.learn_2grams([gram for gram in ngrams(text, 2)])
+            self.learn_3grams([gram for gram in ngrams(text, 3)])
 
         self.normalize_n1()
         self.normalize_n2()
+        self.normalize_n3()
 
     def normalize_n1(self):
         '''Normalize all probabilities in the unigram model
@@ -71,6 +83,16 @@ class EnglishModel(object):
             for k2 in self.model_2gram[k1].keys():
                 self.model_2gram[k1][k2] = float(self.model_2gram[k1][k2])/k1_total
 
+    def normalize_n3(self):
+        '''Normalize all probabilities in the trigram model'''
+        for key1 in self.model_3gram.keys():
+            for key2 in self.model_3gram[key1].keys():
+                key2_total = 0
+                for key3 in self.model_3gram[key1][key2].keys():
+                    key2_total += self.model_3gram[key1][key2][key3]
+                for key3 in self.model_3gram[key1][key2].keys():
+                    self.model_3gram[key1][key2][key3] = float(self.model_3gram[key1][key2][key3])/key2_total
+
     def learn_1grams(self, sentence_words):
         for word in sentence_words:
             if self.model_1gram.get(word) == None:
@@ -87,8 +109,22 @@ class EnglishModel(object):
                 self.model_2gram[w1][w2] = 0
             self.model_2gram[w1][w2] += 1.0
 
-    def condition_on(self, word):
-        this_dict = self.model_2gram[word]
+    def learn_3grams(self, list_of_3grams):
+        for trigram in list_of_3grams:
+            w1, w2, w3 = trigram[0], trigram[1], trigram[2]
+            if self.model_3gram.get(w1) == None:
+                self.model_3gram[w1] = {}
+            if self.model_3gram[w1].get(w2) == None:
+                self.model_3gram[w1][w2] = {}
+            if self.model_3gram[w1][w2].get(w3) == None:
+                self.model_3gram[w1][w2][w3] = 0
+            self.model_3gram[w1][w2][w3] += 1.0
+
+    def condition_on(self, word, word2=''):
+        if word2 == '':
+            this_dict = self.model_2gram[word]
+        else:
+            this_dict = self.model_3gram[word2][word]
         items = []
         probs = []
         for key in this_dict.keys():
@@ -96,22 +132,33 @@ class EnglishModel(object):
             probs.append(this_dict[key])
         return items, probs
 
-    def produce(self, num_tokens):
+    def produce(self, num_tokens, prev=''):
+
         items = []
         probs = []
         for key in self.model_1gram.keys():
             items.append(key)
             probs.append(self.model_1gram[key])
 
-        lastw = ''
         production = []
+        if prev != '':
+            prev_list = prev.split(' ')
+            lastw2 = prev_list[0]
+            lastw = prev_list[1]
+            production.append(lastw2)
+            production.append(lastw)
+        else:
+            lastw = ''
+            lastw2 = ''
         for i in range(num_tokens):
             if lastw == '':
                 res = choice(items, p=probs)
+                lastw2 = lastw
                 lastw = res
             else:
-                items, probs = self.condition_on(lastw)
+                items, probs = self.condition_on(lastw, lastw2)
                 res = choice(items, p=probs)
+                lastw2 = lastw
                 lastw = res
             production.append(res)
         return ' '.join(production)
@@ -166,5 +213,5 @@ class EnglishModel(object):
         return self.perplexity(sentence_words)/length
 
 if __name__ == '__main__':
-    model = EnglishModel()
+    model = EnglishModel(['austen-emma.txt'])
     model.summary()

@@ -5,7 +5,7 @@ from EnglishModel import EnglishModel
 class TestEnglishModel(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.english = EnglishModel()
+        self.english = EnglishModel(['austen-emma.txt', 'chesterton-thursday.txt'])
         self.udhr_article3 = 'everyone has the right to life , liberty , and person .'.split()
         self.udhr_article4 = 'no one shall be held in slavery or servitude .'.split()
         self.udhr_article5 = 'no one shall be subjected to torture or to cruel , inhuman or degrading treatment .'.split()
