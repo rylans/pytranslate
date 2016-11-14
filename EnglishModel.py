@@ -84,7 +84,13 @@ class EnglishModel(object):
                 self.model_2gram[k1][k2] = float(self.model_2gram[k1][k2])/k1_total
 
     def normalize_n3(self):
-        '''Normalize all probabilities in the trigram model'''
+        '''Normalize all probabilities in the trigram model
+
+        Turns the frequencies into probabilities such that the probabilities
+        of trigram_model[word1][word2] sum to 1.0
+
+        The result is that trigram_model['she']['was']['the'] = p('the' | 'she was')
+        '''
         for key1 in self.model_3gram.keys():
             for key2 in self.model_3gram[key1].keys():
                 key2_total = 0
