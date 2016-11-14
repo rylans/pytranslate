@@ -141,6 +141,18 @@ FR une personne est réputée s’être introduite par effraction dans les ca
 EN he obtained entrance by a threat or an artifice or by collusion with a person within ,
 FR elle a obtenu entrée au moyen d’une menace ou d’un artifice ou de collusion avec une personne se trouvant à l’intérieur ,
 
+EN sells, offers for sale or advertises in a province an automobile master key otherwise than under the authority of a licence issued by the Attorney General of that province, or
+FR vend, offre en vente ou annonce dans une province un passe-partout d’automobile autrement que sous l’autorité d’une licence émise par le procureur général de cette province ;
+
+EN Possession of property obtained by crime
+FR Possession de biens criminellement obtenus
+
+EN Obliterated vehicle identification number
+FR Possession d’un véhicule à moteur dont le numéro d’identification a été oblitéré
+
+EN Definition of vehicle identification number
+FR Définition de numéro d’identification
+
 
 =======================================
 == Dr Jekyll and Mr Hyde	    ===
@@ -184,4 +196,22 @@ FR La porte, dépourvue de sonnette ou de heurtoir, était écaillée et décolo
 
 EN and for close on a generation, no one had appeared to drive away these random visitors or to repair their ravages .
 FR et depuis près d’une génération, personne n’était venu chasser ces indiscrets visiteurs in réparer leurs déprédations .
+
+EN He was perfectly cool and made no resistance, but gave me one look, so ugly that it brought out the sweat on me like running .
+FR Il garda un parfait sang-froid et ne tenta aucune résistance, mais me décocha un regard si atroce que je me sentis inondé d’une sueur froide .
+
+EN The people who had turned out were the girl's own family; and pretty soon, the doctor, for whom she had been sent put in his appearance .
+FR Les gens qui avaient surgi étaient les parents mêmes de la petite ; et presque aussitôt on vit paraître le docteur, chez qui elle avait été envoyée .
+
+EN Well, the child was not much the worse, more frightened, according to the Sawbones ;
+FR En somme, la fillette, au dire du morticole, avait eu plus de peur que de mal ;
+
+EN and there you might have supposed would be an end to it. But there was one curious circumstance .
+FR et on eût pu croire que les choses en resteraient là. Mais il se produisit un phénomène singulier .
+
+EN Well, sir, he was like the rest of us ;
+FR Eh bien, monsieur, il en fut de lui comme de nous autres tous :
+
+EN And all the time, as we were pitching it in red hot, we were keeping the women off him as best we could for they were as wild as harpies .
+FR Et pendant tout le temps que nous fûmes à le retourner sur le gril, nous avions fort à faire pour écarter de lui les femmes, qui étaient comme des harpies en fureur .
 
