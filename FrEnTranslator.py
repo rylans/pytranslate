@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 '''French to English Translator'''
 
 class FrEnTranslator(object):
@@ -8,11 +9,13 @@ class FrEnTranslator(object):
         '''
         self.fr_en_dict = {}
         self.target_words = {}
+        self.src_words = {}
         self.inv_target_frequency = {}
+
         self.learn_all([])
 
     def norm(self):
-        '''Normalize fr_en_dict from frequencies to  probabilities'''
+        '''Normalize fr_en_dict from frequencies to probabilities'''
         for src_word in self.fr_en_dict.keys():
             src_word_sum = 0
             for trg_word in self.fr_en_dict[src_word].keys():
@@ -59,29 +62,56 @@ class FrEnTranslator(object):
                 if self.fr_en_dict[source_word].get(target_word) == None:
                     self.fr_en_dict[source_word][target_word] = 0
                 self.fr_en_dict[source_word][target_word] += 1
-                if self.target_words.get(target_word) == None:
-                    self.target_words[target_word] = 0
-                self.target_words[target_word] += 1
-        self.fr_en_dict['.']['.'] += 250
 
-    def translate_word(self, src_word):
-        max_p = 0
-        argmax = ''
+        for target_word in target_words:
+            if self.target_words.get(target_word) == None:
+                self.target_words[target_word] = 0
+            self.target_words[target_word] += 1
+
+        for src_word in source_words:
+            if self.src_words.get(src_word) == None:
+                self.src_words[src_word] = 0
+            self.src_words[src_word] += 1
+
+    def translate_word(self, src_word, top=1):
         if self.fr_en_dict.get(src_word) == None:
             return '[no-translation]'
+
+        candidates = []
         for trg_word in self.fr_en_dict[src_word]:
-            p_trg_given_src = self.fr_en_dict[src_word][trg_word] * self.inv_target_frequency[trg_word]
-            if p_trg_given_src > max_p:
-                max_p = p_trg_given_src
-                argmax = trg_word
-        return argmax
+            p_trg_given_src = self.translation_probability(trg_word, src_word)
+            candidates.append((p_trg_given_src, trg_word))
+        sorted_candidates = sorted(candidates)[::-1]
+        if top == 1:
+            return sorted_candidates[0][1]
+        return [k[1] for k in sorted_candidates[:top]]
+
+    def translation_probability(self, trg_word, src_word):
+        '''Compute probability of target word given source word'''
+        if self.fr_en_dict.get(src_word) == None:
+            return 0
+        if self.fr_en_dict[src_word].get(trg_word) == None:
+            return 0
+        return self.fr_en_dict[src_word][trg_word] * self.inv_target_frequency[trg_word]
 
 def demo():
     translator = FrEnTranslator()
-    #print translator.target_words
-    #print translator.inv_target_frequency
-    for w in 'cette femme assise dans le grand fauteuil .'.split(' '):
-        print translator.translate_word(w)
+
+    '''
+    sen = 'soit de provoquer ou de faciliter la perpétration d’une infraction ,'.split(' ')
+    for word in sen:
+        print word + " " + str(translator.translate_word(word, 8))
+
+    '''
+    sen2 = "personne avec l’intention de offre qui .".split()
+    for word in sen2:
+        print word + " " + str(translator.translate_word(word, 8))
+
+    '''
+    for src_word in translator.src_words:
+        if translator.src_words[src_word] > 2:
+            print src_word
+    '''
 
 if __name__ == '__main__':
     demo()
