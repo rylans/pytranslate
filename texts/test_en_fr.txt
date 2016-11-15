@@ -1,6 +1,12 @@
 EN They often dance .
 FR Elles dansent souvent .
 
+EN They are here .
+FR Elles sont ici .
+
+EN They live with me .
+FR Elles habitent avec moi .
+
 EN My daughters dance .
 FR Mes filles dansent .
 
@@ -9,6 +15,12 @@ FR C' est le chat de Marie .
 
 EN It is her cat .
 FR C' est son chat .
+
+EN It is my cat .
+FR C'est mon chat .
+
+EN It is her dog .
+FR C' est son chien .
 
 EN It is the boy who lives here .
 FR C' est le garçon qui habite ici .
@@ -43,6 +55,39 @@ FR Ils sont élus pour un an .
 EN . .
 FR . .
 
-XN and she laughs .
-XR et elle rit .
+EN she laughs .
+FR elle rit .
+
+EN But the one who laughs is the real dwarf .
+FR Mais celui qui rit est véritablement le nain .
+
+EN Many of them were friends of my mother .
+FR Plusieurs de ces personnes étaient des amies de ma mère .
+
+EN This is a song my mother always sang .
+FR C' est une chanson que ma mère avait l' habitude de chanter.
+
+EN He wants to respond to the needs of his community and came to ask us to if we could support him in any way .
+FR Il veut répondre aux besoins de sa communauté et est venu nous demander de nous mobiliser pour les appuyer .
+
+EN He wants to be in all aspects of our lives .
+FR Il veut être présent dans tous les aspects de notre vie .
+
+EN How do I find out if my claim has been processed ?
+FR Comment puis- je savoir si ma demande a été traitée ?
+
+EN I like my mom .
+FR J' aime ma maman .
+
+EN The collateral damage at this point in time is huge .
+FR En ce moment précis , les dégâts collatéraux sont immenses .
+
+EN It' s hard to concentrate on what you are telling me right now .
+FR J' ai du mal à me concentrer sur ce que vous me dites en ce moment .
+
+EN My cat had a song .
+FR Mon chat avait une chanson .
+
+EN I love pizza .
+FR J' aime la pizza .
 

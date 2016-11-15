@@ -61,7 +61,7 @@ class FrEnTranslator(object):
                     bitext.append(AlignedSent(self.ws(fr_line), self.ws(en_line)))
                     self.learn_aligned_sentence(en_line, fr_line)
                     en_line, fr_line = '', ''
-        self.ibm2 = IBMModel2(bitext, 2)
+        self.ibm2 = IBMModel2(bitext, 5)
         '''
         print ibm2.translation_table
         print ibm2.translation_table['avec']
@@ -120,12 +120,10 @@ class FrEnTranslator(object):
         local_dict = {}
         for src_word in src_words:
             local_dict[src_word] = self.translate_word(src_word, 8)
-            print src_word + " " + str(local_dict[src_word])
 
         possible_translation = []
         for src_word in src_words:
             possible_translation.append(local_dict[src_word][0])
-
 
         px1 = self.english.avg_perplexity(possible_translation)
         px2 = px1
@@ -133,14 +131,21 @@ class FrEnTranslator(object):
         alternate = ' '.join(possible_translation)
         while (improvement > 0.03):
             ix = self.most_perplexing(possible_translation)
-            print improvement, ix
-            if ix == 0:
+            if ix == None:
                 break
-            try:
-                alternate = ' '.join(possible_translation)
-                possible_translation[ix] = self.translate_word(src_words[ix], 2)[1]
-            except IndexError:
+
+            alternate = ' '.join(possible_translation)
+            dozen = self.translate_word(src_words[ix], 3)
+            if len(dozen) < 2:
                 return alternate
+            else:
+                orig = possible_translation[ix]
+                for word in dozen:
+                    possible_translation[ix] = word
+                    px = self.english.avg_perplexity(possible_translation)
+                    if (px1 - px) > 0.2:
+                        return ' '.join(possible_translation)
+                possible_translation[ix] = orig
 
             px1 = px2
             px2 = self.english.avg_perplexity(possible_translation)
@@ -151,8 +156,8 @@ class FrEnTranslator(object):
         return ' '.join(possible_translation)
 
     def argmin(self, lst):
-        minval = lst[0]
-        minix = 0
+        minix = None
+        minval = 0
         for i in range(len(lst)):
             if lst[i] < minval:
                 minval = lst[i]
@@ -174,23 +179,15 @@ class FrEnTranslator(object):
             last_px = px
             px_array.append(marginal)
 
-        print px_array
         return self.argmin(px_array)
 
 def demo():
-    '''
-    translator = FrEnTranslator('texts/sample_en_fr.txt')
-
-    phrase2 = "corruption de fonctionnaires avait un avis de notre femme ."
-    print translator.translate(phrase2)
-    print
-
-    phrase3 = "sa mère avait les choix et elle avait la fille ."
-    print translator.translate(phrase3)
-    '''
-
     translator = FrEnTranslator('texts/test_en_fr.txt')
     print translator.translate('elles dansent et elles sont morts .')
+    print translator.translate('son chat rit .')
+    print translator.translate('ma mère veut son chien .')
+    print translator.translate("et j' aime mon chat .")
+    print translator.translate("et j' aime ce garçon qui avait un chien .")
 
 if __name__ == '__main__':
     demo()
