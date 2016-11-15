@@ -210,7 +210,7 @@ class EnglishModel(object):
         return -1*perplexity_score
 
     def avg_perplexity(self, sentence_words):
-        '''Return the average perplexiy of a sentence
+        '''Return the average perplexity of a sentence
 
         Returns the perplexity of the sentence divided by the number of
         tokens in the sentence.
