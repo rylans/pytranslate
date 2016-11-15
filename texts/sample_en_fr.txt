@@ -2,7 +2,7 @@ EN He was with me a moment ago .
 FR Il était avec moi tout à l’ heure . 
 
 EN Her face was thin and refined , but worn with anxiety , and , at sight of her , I do not know what misgiving made me stand still on the first step , in front of the gate . 
-FR Elle avait un visage maigre et fin , mais ravagé par l’ inquiétude ; et je ne sais quelle appréhension , à as vue , m’ arrêta sur la première marche , devant la grille . 
+FR Elle avait un visage maigre et fin , mais ravagé par l’ inquiétude ; et je ne sais quelle appréhension , à sa vue , m’ arrêta sur la première marche , devant la grille . 
 
 EN No one came to let in the unknown visitor . 
 FR Personne ne venait ouvrir à la visiteuse inconnue . 
@@ -32,7 +32,7 @@ EN She shut herself up in that way for fear some lady visitor , as poor as herse
 FR Elle s’ enfermait ainsi de crainte qu’ une dame de ses amies , aussi pauvre qu’ elle mais aussi fière , vînt la surprendre . 
 
 EN I could no longer recognise the grey-headed woman whom , only a minute ago , I had seen stooping in front of the door , with the piteous and haggard bearing of a hen who has lost the wildest chick in her brood . 
-FR Je ne reconnaissais plus la femme aux cheveux gris , que j’ avais vue courbée devant la porte , une minute auparavant , avec cet air suppliant et hagard de poule qui aurait perdu l’ oiseau sauvage de as couvée . 
+FR Je ne reconnaissais plus la femme aux cheveux gris , que j’ avais vue courbée devant la porte , une minute auparavant , avec cet air suppliant et hagard de poule qui aurait perdu l’ oiseau sauvage de sa couvée . 
 
 EN In the afternoon , I had to go to vespers alone . 
 FR Après midi , je dus partir seul à vêpres . 
@@ -67,10 +67,10 @@ EN Every one is guilty of an indictable offence and liable to imprisonment for a
 FR Est coupable d’un acte criminel et passible d’un emprisonnement maximal de quatorze ans quiconque, selon le cas .
 
 EN being the holder of a judicial office, or being a member of Parliament or of the legislature of a province, directly or indirectly, corruptly accepts, obtains, agrees to accept or attempts to obtain, for themselves or another person, any money, valuable consideration, office, place or employment in respect of anything done or omitted or to be done or omitted by them in their official capacity, or
-FR pendant qu’il occupe une charge judiciaire ou est membre du Parlement ou d’une législature provinciale, accepte ou obtient, convient d’accepter ou tente d’obtenir, directement ou indirectement, par corruption, pour lui-même ou pour une autre personne, de l’argent, une contrepartie valable, une charge, une place ou un emploi à l’égard d’une chose qu’il a faite ou s’est abstenu de faire ou qu’il fera ou s’abstiendra de faire en as qualité officielle ;
+FR pendant qu’il occupe une charge judiciaire ou est membre du Parlement ou d’une législature provinciale, accepte ou obtient, convient d’accepter ou tente d’obtenir, directement ou indirectement, par corruption, pour lui-même ou pour une autre personne, de l’argent, une contrepartie valable, une charge, une place ou un emploi à l’égard d’une chose qu’il a faite ou s’est abstenu de faire ou qu’il fera ou s’abstiendra de faire en sa qualité officielle ;
 
 EN directly or indirectly, corruptly gives or offers to a person mentioned in paragraph (a), or to anyone for the benefit of that person, any money, valuable consideration, office, place or employment in respect of anything done or omitted or to be done or omitted by that person in their official capacity .
-FR donne ou offre directement ou indirectement à une personne visée à l’alinéa a) ou à quiconque au profit de cette personne, par corruption, de l’argent, une contrepartie valable, une charge, une place ou un emploi à l’égard d’une chose qu’elle a faite ou s’est abstenue de faire ou qu’elle fera ou s’abstiendra de faire en as qualité officielle .
+FR donne ou offre directement ou indirectement à une personne visée à l’alinéa a) ou à quiconque au profit de cette personne, par corruption, de l’argent, une contrepartie valable, une charge, une place ou un emploi à l’égard d’une chose qu’elle a faite ou s’est abstenue de faire ou qu’elle fera ou s’abstiendra de faire en sa qualité officielle .
 
 EN Consent of Attorney General .
 FR Consentement du procureur général .
@@ -153,6 +153,29 @@ FR Possession d’un véhicule à moteur dont le numéro d’identification a
 EN Definition of vehicle identification number
 FR Définition de numéro d’identification
 
+EN Punishment
+FR Peine
+
+EN Bringing into Canada property obtained by crime
+FR Apporter au Canada des objets criminellement obtenus
+
+EN Notice to accused
+FR Avis au prévenu
+
+EN Question of fact
+FR Question de fait
+
+EN the delivery of personal property
+FR soit la livraison de biens meubles
+
+EN the payment of money
+FR soit le paiement d’une somme d’argent
+
+EN the making of a loan
+FR soit l’octroi d’un prêt
+
+EN the grant or extension of credit
+FR soit l’ouverture ou l’extension d’un crédit
 
 =======================================
 == Dr Jekyll and Mr Hyde	    ===
@@ -214,4 +237,69 @@ FR Eh bien, monsieur, il en fut de lui comme de nous autres tous :
 
 EN And all the time, as we were pitching it in red hot, we were keeping the women off him as best we could for they were as wild as harpies .
 FR Et pendant tout le temps que nous fûmes à le retourner sur le gril, nous avions fort à faire pour écarter de lui les femmes, qui étaient comme des harpies en fureur .
+
+
+=======================
+=== Grammar examples ==
+=======================
+
+EN There's a kitten in this cup .
+FR Il y a un chaton dans cette tasse .
+
+EN There are some kids over there .
+FR Il y a des enfants là-bas .
+
+EN There are two things to do .
+FR Il y a deux choses à faire .
+
+EN I saw the movie three weeks ago .
+FR J'ai vu le film il y a trois semaines .
+
+EN Airframe manufacturers of large commercial aircraft often select more than one make of engine per platform
+FR Les constructeurs d'avions commerciaux de grande capacité choisissent souvent plus d'une marque de moteur par plate-forme
+
+EN The first moments of a meeting often determine how it will unfold.
+FR Les premiers moments de la rencontre déterminent souvent son déroulement
+
+EN This can often be complex and confusing to many Canadians
+FR Cette question est complexe et déroute de nombreux Canadiens
+
+EN She stated that she loved her mother although she had been beaten by her
+FR La petite fille avait dit qu'elle aimait sa mère bien qu'elle l'ait battue
+
+EN She discovered that her mother had passed away and her father's identity remained uncertain
+FR Elle a découvert que sa mère était décédée, et que l'identité de son père demeurait incertaine
+
+EN An inflammatory disease resulting in skin cells in the affected areas reproducing every 3 to 6 days, instead of 28
+FR Une maladie inflammatoire à cause de laquelle les cellules cutanées des zones atteintes se reproduisent tous les 3 à 6 jours, au lieu de tous les 28 jours
+
+EN The choices made seem to be quite appropriate and efficient, quiet parts alternating with more aggressive ones
+FR Les choix paraissent judicieux et surtout efficaces, alternant passages calmes à d'autres bien plus féroces
+
+EN Even though the living room was small, the painting made it seem bigger
+FR Même si le salon était petit, la peinture le faisait paraître plus grand
+
+EN It would seem that these demands being made with regard to financial services are quite justified
+FR S'agissant des services financiers, cela semble tout à fait justifié
+
+EN the .
+FR la .
+
+EN the .
+FR le .
+
+EN had .
+FR avait .
+
+EN The choices .
+FR Les choix .
+
+EN the .
+FR les .
+
+EN the girl .
+FR la fille .
+
+EN my daughter .
+FR ma fille .
 

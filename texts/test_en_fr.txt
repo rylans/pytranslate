@@ -1,0 +1,48 @@
+EN They often dance .
+FR Elles dansent souvent .
+
+EN My daughters dance .
+FR Mes filles dansent .
+
+EN It is Marie 's cat .
+FR C' est le chat de Marie .
+
+EN It is her cat .
+FR C' est son chat .
+
+EN It is the boy who lives here .
+FR C' est le garçon qui habite ici .
+
+EN It is the boy that I like .
+FR C' est le garçon que j' aime bien .
+
+EN It is the boy who I help with math .
+FR C' est le garçon auquel je donne des conseils en maths .
+
+EN It is the boy whose parents are actors .
+FR C' est le garçon dont les parents sont acteurs .
+
+EN This boy had a thin face .
+FR Ce garçon avait un visage maigre .
+
+EN My parents are dead .
+FR Mes parents sont morts .
+
+EN My parents died in a car crash .
+FR Mes parents sont morts dans un accident de voiture .
+
+EN We are the agents of political change .
+FR Nous sommes les acteurs du changement politique .
+
+EN In these subjects we are all actors and protagonists .
+FR Dans ces sujets nous sommes tous des acteurs et des protagonistes .
+
+EN They are appointed for one year .
+FR Ils sont élus pour un an .
+
+EN . .
+FR . .
+
+XN and she laughs .
+XR et elle rit .
+
