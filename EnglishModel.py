@@ -218,6 +218,18 @@ class EnglishModel(object):
         length = len(sentence_words)
         return self.perplexity(sentence_words)/length
 
+    def chain(self, sentence_words):
+        '''Return the product of conditional probabilities
+
+        chain(a b c d) = p(b|a) * p(c|b) * p(d|c)
+        '''
+        lastw = sentence_words[0]
+        product = 1.0
+        for word in sentence_words[1:]:
+            product *= self.probability(word, lastw)
+            lastw = word
+        return product
+
 if __name__ == '__main__':
     model = EnglishModel(['austen-emma.txt'])
     model.summary()
