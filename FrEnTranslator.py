@@ -4,23 +4,29 @@
 from nltk.align import AlignedSent
 from nltk.align import IBMModel2
 from EnglishModel import EnglishModel
+from TranslationScore import TranslationScore
 
 class FrEnTranslator(object):
-    '''Translation module from French to English'''
+    '''Translation module from French to English
+
+    P(a|b) = p(b|a) * p(a) [p(b) ignored since we're maximizing]
+
+    French -> English
+    Probability of three english words given 3 french words (bigram model):
+    P(e1 e2 e3 | f1 f2 f3)
+        = p(f1 f2 f3 | e1 e2 e3) * p(e1 e2 e3)
+        = p(f1 f2 f3 | e...) * p(e3|e2) * p(e2|e1) * p(e1) [markov assumption]
+        = p(f1 | e1) * p(f2 | e2) * p(f3 | e3) * p(e3 | e2) * p(e2 | e1) * p(e1)
+        = t_3
+
+    p(e1 e2 e3 e4 | f1 f2 f3 f4) = t_3 * p(f4 | e4) * p(e4 | e3)
+    '''
     def __init__(self):
-        self.english = EnglishModel(['austen-emma.txt'])
+        self.english = EnglishModel(['austen-emma.txt', 'austen-persuasion.txt', 'whitman-leaves.txt'])
         self.translation_table = None
         self.fr_en_dict = {}
         self.target_words = {}
         self.src_words = {}
-
-        '''
-        if fr_file != '' and en_file != '':
-            fr_lines, en_lines = self.aligned_text_from_files(fr_file, en_file)
-            self.learn_aligned_text(fr_lines, en_lines)
-        else:
-            self.learn_all(bitext_file_name)
-            '''
 
     def after_learn(self):
         self.norm_source_words()
@@ -152,14 +158,69 @@ class FrEnTranslator(object):
         return self.translation_table[src_word][trg_word] * self.src_words[src_word]
 
     def translate(self, source_sentence):
+        output = self._translate(source_sentence)
+        print output
+        return output
+
+    def to_matrix(self, src_words, start_ix, n_words, m_trans):
+        '''Return n x m matrix of translated words
+
+        Return matrix of n input words and m translation possibilities. Results
+        in list of list of string.
+
+        words: elle dit lui
+
+        [
+            [she sees him]
+            [she sees her]
+            [she says him]
+            [she says her]
+            [he sees him]
+            [he sees her]
+            [he says him]
+            [he says her]
+        ]
+        '''
+        assert n_words == 3
+        assert m_trans == 3
+        tx = {}
+        result_set = []
+        words = src_words[start_ix:][:n_words]
+
+        for index in range(n_words):
+            if index < len(words):
+                tx[index] = self.translate_word(words[index], m_trans)
+
+        for tx1 in tx[0]:
+            for tx2 in tx[1]:
+                for tx3 in tx[2]:
+                    result_set.append([tx1, tx2, tx3])
+        return result_set
+
+    def top_n_candidates(self, n, list_of_candidates):
+        '''Return top N candidate strings'''
+        px_ix = [(self.english.chain(c), c) for c in list_of_candidates]
+
+        sorted_px_ix = [c[1] for c in sorted(px_ix)][::-1]
+        print sorted_px_ix[:n]
+        return sorted_px_ix[:n]
+
+    def _translate(self, source_sentence):
         '''Translate source sentence to English'''
         if self.translation_table == None:
             raise Exception("Unable to translate before learning")
+
         src_words = self.preprocess(source_sentence)
         local_dict = {}
         for src_word in src_words:
             translation_options = self.translate_word(src_word, 8)
             local_dict[src_word] = translation_options
+            print src_word + " " + str(translation_options)
+
+        # Make 3 x 3 matrix (top 3 translations of first 3 words)
+        matrix = self.to_matrix(src_words, 0, 3, 3)
+        top3 = self.top_n_candidates(3, matrix)
+        # TODO: Incorporate this into translation
 
         possible_translation = []
         for src_word in src_words:
@@ -229,23 +290,36 @@ class FrEnTranslator(object):
 def demo():
     translator = FrEnTranslator()
     translator.learn_from_file('texts/europarl-sample.fr-en.fr', 'texts/europarl-sample.fr-en.en')
+
     print translator.translate('Je vous invite à vous lever pour cette minute de silence.')
     print translator.translate("Madame la Présidente, c'est une motion de procédure.")
     print translator.translate("Et tout ceci dans le respect des principes que nous avons toujours soutenus.")
 
-    fr_side = '''elle a un chien
-il a un chat
-elle dit
-un taureau'''
-
-    en_side = '''she has a dog
-he has a cat
-she says
-a bull'''
-
+def scoring_demo():
+    score = TranslationScore()
     translator = FrEnTranslator()
-    translator.learn_from_text(fr_side, en_side)
-    print translator.translate('il a un chien')
+    translator.learn_from_file('texts/europarl-sample.fr-en.fr', 'texts/europarl-sample.fr-en.en')
+
+    fr_inputs = ["Le débat est clos."]
+    fr_inputs.append("Le vote aura lieu demain à 12 heures.")
+    fr_inputs.append("Je voudrais demander à la vice-présidente si elle peut nous dire où en sont les efforts d'harmonisation déployés par ces deux organisations et si l'UE a la possibilité d'accélérer ces efforts en appliquant des principes aussi simples que possibles.")
+    fr_inputs.append("Car une chose est claire : même si nous adoptons une excellente réglementation au sein de l'Union européenne, le trafic ne s'arrête pas à ces frontières ; il les traverse.")
+
+    en_expecteds = ["The debate is closed."]
+    en_expecteds.append("The vote will take place tomorrow at 12 p.m.")
+    en_expecteds.append("I would like to ask the Vice-President if she is in a position to tell us today what the state of play is with regard to the efforts towards harmonisation being made by these two organisations, and whether the EU is in a position to hasten these harmonisation efforts, in accordance with principles that are as simple as possible.")
+    en_expecteds.append("For one thing is clear: even if we come to an excellent arrangement within the European Union, traffic does not stop at our borders, it goes beyond them.")
+
+    for pair in zip(fr_inputs, en_expecteds):
+        fr_input = pair[0]
+        actual = translator.translate(fr_input)
+        expected = pair[1]
+        z = score.of(actual, expected)
+        print fr_input
+        print actual
+        print z
+        print
 
 if __name__ == '__main__':
-    demo()
+    #demo()
+    scoring_demo()

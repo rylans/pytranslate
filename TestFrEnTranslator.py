@@ -5,7 +5,7 @@ from FrEnTranslator import FrEnTranslator
 
 class TestFrEnTranslator(unittest.TestCase):
 
-    def test_simple_translation(self):
+    def test_simple_replacement_translation(self):
         fr_side = '''il rit
 elle dit
 il est'''
@@ -18,6 +18,34 @@ he is'''
         translator.learn_from_text(fr_side, en_side)
         self.verify_full_translation(translator, 'elle rit', 'she laughs')
         self.verify_full_translation(translator, 'il dit', 'he says')
+
+    def test_simple_replacement_translation2(self):
+        fr_side = '''la pomme est rouge
+rouge
+orange'''
+
+        en_side = '''the apple is red
+red
+orange'''
+
+        translator = FrEnTranslator()
+        translator.learn_from_text(fr_side, en_side)
+        self.verify_full_translation(translator, 'la pomme est orange', 'the apple is orange')
+
+    def test_simple_replacement_translation3(self):
+        fr_side = '''les enfants sont rouge
+mes enfants sont blanc
+nous sommes rouge
+nous avons'''
+
+        en_side = '''the kids are red
+my kids are white
+we are red
+we have'''
+
+        translator = FrEnTranslator()
+        translator.learn_from_text(fr_side, en_side)
+        self.verify_full_translation(translator, 'nous sommes blanc', 'we are white')
 
     def test_word_deletion_translation(self):
         fr_side = '''Les deux yeux
