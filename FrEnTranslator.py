@@ -60,19 +60,6 @@ class FrEnTranslator(object):
         for src_word in self.target_words.keys():
             self.target_words[src_word] = self.target_words[src_word]/float(src_word_sum)
 
-    def invert_targets(self):
-        '''Invert target words
-
-        Result is that inv_target_frequency['the'] = 1.0/(1+freq('the'))
-        '''
-        for trg_word in self.target_words.keys():
-            self.inv_target_frequency[trg_word] = 1.0/(1+self.target_words[trg_word])
-
-    '''
-    def learn_all(self, filename):
-        self.learn(filename)
-        '''
-
     def preprocess(self, line):
         '''Process a line into a list of tokens'''
         no_newline = line.replace('\n', '')
@@ -118,27 +105,6 @@ class FrEnTranslator(object):
         ibm2 = IBMModel2(bitext, 5)
         self.translation_table = ibm2.translation_table
 
-    '''
-    def learn(self, filename):
-        bitext = []
-        en_line = ''
-        fr_line = ''
-        with open(filename, 'r') as open_file:
-            for line in open_file.readlines():
-                if "EN " in line:
-                    en_line = line
-                if "FR " in line:
-                    fr_line = line
-                if en_line != '' and fr_line != '':
-                    bitext.append(AlignedSent(self.ws(fr_line), self.ws(en_line)))
-                    self.learn_aligned_sentence(en_line, fr_line)
-                    en_line, fr_line = '', ''
-        self.ibm2 = IBMModel2(bitext, 5)
-
-    def ws(self, source):
-        return [w.lower() for w in source.split(' ')[1:]]
-        '''
-
     def learn_aligned_sentence(self, target, source):
         source_words = [w for w in self.preprocess(source)]
         target_words = [w for w in self.preprocess(target)]
@@ -165,8 +131,6 @@ class FrEnTranslator(object):
             self.src_words[src_word] += 1
 
     def translate_word(self, src_word, top=1):
-        if src_word == '.':
-            return ['.']
         if self.translation_table.get(src_word) == None:
             return ['[no-translation]']
 
