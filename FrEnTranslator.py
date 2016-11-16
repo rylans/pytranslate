@@ -7,13 +7,40 @@ from EnglishModel import EnglishModel
 
 class FrEnTranslator(object):
     '''Translation module from French to English'''
-    def __init__(self, bitext_file_name):
+    def __init__(self):
+        self.english = EnglishModel(['austen-emma.txt'])
+        self.translation_table = None
         self.fr_en_dict = {}
         self.target_words = {}
         self.src_words = {}
 
-        self.learn_all(bitext_file_name)
-        self.english = EnglishModel(['austen-emma.txt'])
+        '''
+        if fr_file != '' and en_file != '':
+            fr_lines, en_lines = self.aligned_text_from_files(fr_file, en_file)
+            self.learn_aligned_text(fr_lines, en_lines)
+        else:
+            self.learn_all(bitext_file_name)
+            '''
+
+    def after_learn(self):
+        self.norm_source_words()
+        self.norm_target_words()
+
+    def learn_from_file(self, fr_file, en_file):
+        '''Train the translation model on these two files'''
+        if fr_file == '' or en_file == '':
+            raise Exception("nothing to learn")
+        fr_lines, en_lines = self.aligned_text_from_files(fr_file, en_file)
+        self.learn_aligned_text(fr_lines, en_lines)
+        self.after_learn()
+
+    def learn_from_text(self, fr_text, en_text):
+        '''Train the translation model on these two text strings'''
+        if fr_text == '' or en_text == '':
+            raise Exception("nothing to learn")
+        fr_lines, en_lines = self.aligned_text_from_strings(fr_text, en_text)
+        self.learn_aligned_text(fr_lines, en_lines)
+        self.after_learn()
 
     def norm_source_words(self):
         '''Normalize source words from frequencies to probabilities'''
@@ -41,12 +68,57 @@ class FrEnTranslator(object):
         for trg_word in self.target_words.keys():
             self.inv_target_frequency[trg_word] = 1.0/(1+self.target_words[trg_word])
 
+    '''
     def learn_all(self, filename):
-        '''Learn lexicon from list of bilingual texts'''
         self.learn(filename)
-        self.norm_source_words()
-        self.norm_target_words()
+        '''
 
+    def preprocess(self, line):
+        '''Process a line into a list of tokens'''
+        no_newline = line.replace('\n', '')
+        lowline = no_newline.lower()
+        comma_sep = lowline.replace(',', ' ,')
+        apostrophe_sep = comma_sep.replace("'", "' ")
+        period_sep = apostrophe_sep.replace('.', ' .')
+        hyphen_sep = period_sep.replace('-', ' ')
+        question_sep = hyphen_sep.replace('?', ' ?')
+        return question_sep.split(' ')
+
+    def aligned_text_from_strings(self, fr_string, en_string):
+        '''Get aligned sentences from both texts
+
+        Returns a 2-tuple of lists of strings
+        '''
+        fr_lines = fr_string.split('\n')
+        en_lines = en_string.split('\n')
+        assert len(fr_lines) == len(en_lines)
+        return (fr_lines, en_lines)
+
+    def aligned_text_from_files(self, fr_file, en_file):
+        fr_lines = []
+        en_lines = []
+        with open(fr_file, 'r') as open_fr_file:
+            for line in open_fr_file.readlines():
+                fr_lines.append(line)
+
+        with open(en_file, 'r') as open_en_file:
+            for line in open_en_file.readlines():
+                en_lines.append(line)
+
+        assert len(fr_lines) == len(en_lines)
+
+        return (fr_lines, en_lines)
+
+    def learn_aligned_text(self, fr_lines, en_lines):
+        '''Learn from IBM2-aligned model of lists of lines of both languages'''
+        bitext = []
+        for pair in zip(fr_lines, en_lines):
+            bitext.append(AlignedSent(self.preprocess(pair[0]), self.preprocess(pair[1])))
+            self.learn_aligned_sentence(pair[1], pair[0])
+        ibm2 = IBMModel2(bitext, 5)
+        self.translation_table = ibm2.translation_table
+
+    '''
     def learn(self, filename):
         bitext = []
         en_line = ''
@@ -62,18 +134,17 @@ class FrEnTranslator(object):
                     self.learn_aligned_sentence(en_line, fr_line)
                     en_line, fr_line = '', ''
         self.ibm2 = IBMModel2(bitext, 5)
-        '''
-        print ibm2.translation_table
-        print ibm2.translation_table['avec']
-        print ibm2.translation_table['moi']
-        '''
 
     def ws(self, source):
         return [w.lower() for w in source.split(' ')[1:]]
+        '''
 
     def learn_aligned_sentence(self, target, source):
-        source_words = [w.lower() for w in source.split(' ')[1:-1]]
-        target_words = [w.lower() for w in target.split(' ')[1:-1]]
+        source_words = [w for w in self.preprocess(source)]
+        target_words = [w for w in self.preprocess(target)]
+
+        #source_words = [w.lower() for w in source.split(' ')]
+        #target_words = [w.lower() for w in target.split(' ')]
 
         for source_word in source_words:
             for target_word in target_words:
@@ -94,14 +165,16 @@ class FrEnTranslator(object):
             self.src_words[src_word] += 1
 
     def translate_word(self, src_word, top=1):
-        if self.fr_en_dict.get(src_word) == None:
+        if src_word == '.':
+            return ['.']
+        if self.translation_table.get(src_word) == None:
             return ['[no-translation]']
 
         candidates = []
-        for trg_word in self.fr_en_dict[src_word]:
+        for trg_word in self.translation_table[src_word]:
             p_trg_given_src = self.translation_probability(trg_word, src_word)
             candidates.append((p_trg_given_src, trg_word))
-        sorted_candidates = sorted(candidates)[::-1]
+        sorted_candidates = [c for c in sorted(candidates)[::-1] if c[0] > 0]
         if top == 1:
             return sorted_candidates[0][1]
         return [k[1] for k in sorted_candidates[:top]]
@@ -112,19 +185,27 @@ class FrEnTranslator(object):
             return 0
         if self.fr_en_dict[src_word].get(trg_word) == None:
             return 0
-        return self.ibm2.translation_table[src_word][trg_word] * self.src_words[src_word]
+        return self.translation_table[src_word][trg_word] * self.src_words[src_word]
 
     def translate(self, source_sentence):
         '''Translate source sentence to English'''
-        src_words = source_sentence.split(' ')
+        if self.translation_table == None:
+            raise Exception("Unable to translate before learning")
+        src_words = self.preprocess(source_sentence)
         local_dict = {}
         for src_word in src_words:
-            local_dict[src_word] = self.translate_word(src_word, 8)
+            translation_options = self.translate_word(src_word, 8)
+            local_dict[src_word] = translation_options
 
         possible_translation = []
         for src_word in src_words:
-            possible_translation.append(local_dict[src_word][0])
+            try:
+                possible_translation.append(local_dict[src_word][0])
+            except IndexError:
+                possible_translation.append('[none]')
 
+        if not self.english:
+            return ' '.join(possible_translation)
         px1 = self.english.avg_perplexity(possible_translation)
         px2 = px1
         improvement = 1
@@ -182,12 +263,25 @@ class FrEnTranslator(object):
         return self.argmin(px_array)
 
 def demo():
-    translator = FrEnTranslator('texts/test_en_fr.txt')
-    print translator.translate('elles dansent et elles sont morts .')
-    print translator.translate('son chat rit .')
-    print translator.translate('ma mère veut son chien .')
-    print translator.translate("et j' aime mon chat .")
-    print translator.translate("et j' aime ce garçon qui avait un chien .")
+    translator = FrEnTranslator()
+    translator.learn_from_file('texts/europarl-sample.fr-en.fr', 'texts/europarl-sample.fr-en.en')
+    print translator.translate('Je vous invite à vous lever pour cette minute de silence.')
+    print translator.translate("Madame la Présidente, c'est une motion de procédure.")
+    print translator.translate("Et tout ceci dans le respect des principes que nous avons toujours soutenus.")
+
+    fr_side = '''elle a un chien
+il a un chat
+elle dit
+un taureau'''
+
+    en_side = '''she has a dog
+he has a cat
+she says
+a bull'''
+
+    translator = FrEnTranslator()
+    translator.learn_from_text(fr_side, en_side)
+    print translator.translate('il a un chien')
 
 if __name__ == '__main__':
     demo()

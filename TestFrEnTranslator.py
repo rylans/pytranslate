@@ -4,33 +4,38 @@ import unittest
 from FrEnTranslator import FrEnTranslator
 
 class TestFrEnTranslator(unittest.TestCase):
-    @classmethod
-    def setUpClass(self):
-        self.translator = FrEnTranslator('texts/test_en_fr.txt')
 
-    def test_translate_garcon(self):
-        self.verify_translation('garçon', 'boy')
+    def test_simple_translation(self):
+        fr_side = '''il rit
+elle dit
+il est'''
 
-    def test_translate_dansent(self):
-        self.verify_translation('dansent', 'dance')
+        en_side = '''he laughs
+she says
+he is'''
 
-    def test_translate_elles_dansent(self):
-        self.verify_full_translation('elles dansent et elles sont morts .', 'they dance and they are dead .')
+        translator = FrEnTranslator()
+        translator.learn_from_text(fr_side, en_side)
+        self.verify_full_translation(translator, 'elle rit', 'she laughs')
+        self.verify_full_translation(translator, 'il dit', 'he says')
 
-    def test_translate_son_chat(self):
-        self.verify_full_translation('son chat rit .', 'her cat laughs .')
+    def test_word_deletion_translation(self):
+        fr_side = '''Les deux yeux
+    Les parents sont ici
+    Ils sont morts
+    Dans les deux cas'''
 
-    def test_translate_jaime_mon_chat(self):
-        self.verify_full_translation("et j' aime mon chat .", 'and i like my cat .')
+        en_side = '''Both eyes
+    The parents are here
+    They are dead
+    In both cases'''
 
-    def test_translate_jaime_ce_garcon(self):
-        self.verify_full_translation("et j' aime ce garçon qui avait un chien .", 'and i like this boy who had one dog .')
+        translator = FrEnTranslator()
+        translator.learn_from_text(fr_side, en_side)
+        self.verify_full_translation(translator, 'Les deux sont ici', 'both are here')
 
-    def verify_full_translation(self, french, english):
-        self.assertTrue(self.translator.translate(french) == english)
-
-    def verify_translation(self, french_word, english_word):
-        self.assertTrue(self.translator.translate_word(french_word) == english_word)
+    def verify_full_translation(self, translator, french, english):
+        self.assertTrue(translator.translate(french) == english)
 
 if __name__ == '__main__':
     unittest.main()
