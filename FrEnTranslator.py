@@ -22,7 +22,7 @@ class FrEnTranslator(object):
     p(e1 e2 e3 e4 | f1 f2 f3 f4) = t_3 * p(f4 | e4) * p(e4 | e3)
     '''
     def __init__(self):
-        self.english = EnglishModel(['austen-emma.txt', 'austen-persuasion.txt', 'whitman-leaves.txt'])
+        self.english = None
         self.translation_table = None
         self.fr_en_dict = {}
         self.target_words = {}
@@ -115,9 +115,6 @@ class FrEnTranslator(object):
         source_words = [w for w in self.preprocess(source)]
         target_words = [w for w in self.preprocess(target)]
 
-        #source_words = [w.lower() for w in source.split(' ')]
-        #target_words = [w.lower() for w in target.split(' ')]
-
         for source_word in source_words:
             for target_word in target_words:
                 if self.fr_en_dict.get(source_word) == None:
@@ -136,7 +133,9 @@ class FrEnTranslator(object):
                 self.src_words[src_word] = 0
             self.src_words[src_word] += 1
 
-    def translate_word(self, src_word, top=1):
+    def translate_word(self, src_word, top=1, with_probs=False):
+        if src_word == '.':
+            return [(0.025, '.')] #FIXME: fix this
         if self.translation_table.get(src_word) == None:
             return ['[no-translation]']
 
@@ -147,6 +146,8 @@ class FrEnTranslator(object):
         sorted_candidates = [c for c in sorted(candidates)[::-1] if c[0] > 0]
         if top == 1:
             return sorted_candidates[0][1]
+        if with_probs:
+            return sorted_candidates[:top]
         return [k[1] for k in sorted_candidates[:top]]
 
     def translation_probability(self, trg_word, src_word):

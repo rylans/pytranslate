@@ -52,11 +52,11 @@ class EnglishModel(object):
         for text in texts:
             self.learn_1grams(text)
             self.learn_2grams([gram for gram in ngrams(text, 2)])
-            self.learn_3grams([gram for gram in ngrams(text, 3)])
+            #self.learn_3grams([gram for gram in ngrams(text, 3)])
 
         self.normalize_n1()
         self.normalize_n2()
-        self.normalize_n3()
+        #self.normalize_n3()
 
     def normalize_n1(self):
         '''Normalize all probabilities in the unigram model
@@ -101,6 +101,7 @@ class EnglishModel(object):
 
     def learn_1grams(self, sentence_words):
         for word in sentence_words:
+            word = word.lower()
             if self.model_1gram.get(word) == None:
                 self.model_1gram[word] = 0
             self.model_1gram[word] += 1.0
@@ -108,7 +109,7 @@ class EnglishModel(object):
 
     def learn_2grams(self, list_of_2grams):
         for bigram in list_of_2grams:
-            w1, w2 = bigram[0], bigram[1]
+            w1, w2 = bigram[0].lower(), bigram[1].lower()
             if self.model_2gram.get(w1) == None:
                 self.model_2gram[w1] = {}
             if self.model_2gram[w1].get(w2) == None:
@@ -188,6 +189,8 @@ class EnglishModel(object):
 
         The probability shall never be zero
         '''
+        if ' ' in given:
+            given = given.split(' ')[-1]
         if given == '':
             return self.probability_nocond(word)
 
