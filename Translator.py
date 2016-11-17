@@ -1,6 +1,7 @@
 '''Translator class'''
 
 class Translator(object):
+    '''Combine translation model p(e1|f1) and language model p(e1|e0)'''
     def __init__(self, translation_model, production_model):
         self.translation_model = translation_model
         self.production_model = production_model

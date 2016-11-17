@@ -7,16 +7,16 @@ from FrEnTranslator import FrEnTranslator
 class TestTranslator(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.english_model = EnglishModel(['austen-emma.txt'])
+        self.english_model = EnglishModel(['austen-emma.txt', 'melville-moby_dick.txt'])
 
-    def test_word_disambiguation_from_corpus_sa_fille(self):
+    def test_word_disambiguation_sa_fille(self):
         fr_text = 'Avec sa fille'
         en_text = 'With his daughter'
 
         trx = self._new_translator(fr_text, en_text, self.english_model)
         self._verify(trx, 'avec sa fille', 'with his daughter')
 
-    def test_word_disambiguation_from_corpus_mais_elle(self):
+    def test_word_disambiguation_mais_elle(self):
         fr_text = 'mais elle'
         en_text = 'she but'
 
@@ -39,6 +39,23 @@ the pizza'''
         self._verify(trx, 'le chat est blanc', 'the cat is white')
         self._verify(trx, 'la vache est noir', 'the cow is black')
         self._verify(trx, 'la vache est le chat', 'the cow is the cat')
+
+    def test_new_translations_qui_est(self):
+        fr_text = '''qui est ici
+elle est ici
+il est rouge
+il mange bien'''
+        en_text = '''who is here
+she is here
+he is red
+he eats well'''
+        trx = self._new_translator(fr_text, en_text, self.english_model)
+        self._verify(trx, 'qui est rouge', 'who is red')
+        self._verify(trx, 'elle est rouge', 'she is red')
+        self._verify(trx, 'qui mange ici', 'who eats here')
+        self._verify(trx, 'il mange ici', 'he eats here')
+        self._verify(trx, 'qui mange bien', 'who eats well')
+        self._verify(trx, 'elle mange bien', 'she eats well')
 
     def _verify(self, translator, source_text, expected_translation):
         self.assertTrue(translator.translate(source_text) == expected_translation)
