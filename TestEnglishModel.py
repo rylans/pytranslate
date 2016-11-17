@@ -21,6 +21,7 @@ class TestEnglishModel(unittest.TestCase):
     def test_that_existing_word_is_more_probable(self):
         p_over = self.english.probability('over')
         p_none = self.english.probability('never_occursABC123')
+        self.assertTrue(p_none > 0)
         self.assertTrue(p_over > p_none)
 
     def test_conditional_probability_nonzero(self):
@@ -46,13 +47,6 @@ class TestEnglishModel(unittest.TestCase):
         px_I = self.english.perplexity(['I'])
         px_I_declare = self.english.perplexity(['I', 'declare'])
         self.assertTrue(px_I_declare > px_I)
-
-    def test_perplexity_reduced_with_better_grammar(self):
-        px_I_declare_that = self.english.perplexity(['I', 'declare', 'that'])
-        px_that_I_declare = self.english.perplexity(['that', 'I', 'declare'])
-        px_declare_I_that = self.english.perplexity(['declare', 'I', 'that'])
-        self.assertTrue(px_that_I_declare < px_declare_I_that)
-        self.assertTrue(px_I_declare_that < px_that_I_declare)
 
     def test_perplexity_reduced_with_better_grammar2(self):
         px_said_the_woman = self.english.perplexity(['said', 'the', 'woman'])
