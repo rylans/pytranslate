@@ -2,11 +2,14 @@
 Statistical machine translation
 
 
-Goals
+### Test
+`make test`
+
+### Goals
 * Generative language model for English
 * Generative language model for French
 
 
-Resources
+### Resources
 * http://opus.lingfil.uu.se/Books.php
 * https://en.wikipedia.org/wiki/Perplexity
