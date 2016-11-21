@@ -9,6 +9,9 @@ Statistical machine translation
 * Generative language model for English
 * Generative language model for French
 
+### Docs
+* [pytranslate API documentation](docs/api.md)
+
 
 ### Resources
 * http://opus.lingfil.uu.se/Books.php
