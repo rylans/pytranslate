@@ -1,8 +1,8 @@
 import unittest
 
-from Translator import Translator
-from EnglishModel import EnglishModel
-from FrEnTranslator import FrEnTranslator
+from pytranslate.Translator import Translator
+from pytranslate.EnglishModel import EnglishModel
+from pytranslate.FrEnTranslator import FrEnTranslator
 
 class TestTranslator(unittest.TestCase):
     @classmethod

@@ -1,2 +1,5 @@
 test:
-	python -m unittest discover -p '*.py'
+	nosetests -v
+
+clean:
+	rm -f *.pyc

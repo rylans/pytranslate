@@ -1,6 +1,6 @@
 import unittest
 
-from EnglishModel import EnglishModel
+from pytranslate.EnglishModel import EnglishModel
 
 class TestEnglishModel(unittest.TestCase):
     @classmethod
@@ -71,22 +71,21 @@ class TestEnglishModel(unittest.TestCase):
         self.assertTrue(px_on_of > px_on_top_of)
 
     def test_average_perplexity_on_word_deletions_article3(self):
-        self.given_text_test_average_perplexity_on_word_deletions(self.udhr_article3)
+        self.given_text_assert_average_perplexity_on_word_deletions(self.udhr_article3, self.english)
 
     def test_average_perplexity_on_word_deletions_article4(self):
-        self.given_text_test_average_perplexity_on_word_deletions(self.udhr_article4)
+        self.given_text_assert_average_perplexity_on_word_deletions(self.udhr_article4, self.english)
 
     def test_average_perplexity_on_word_deletions_article5(self):
-        self.given_text_test_average_perplexity_on_word_deletions(self.udhr_article5)
+        self.given_text_assert_average_perplexity_on_word_deletions(self.udhr_article5, self.english)
 
-    def given_text_test_average_perplexity_on_word_deletions(self, text):
-        text = self.udhr_article4
-        px_text = self.english.avg_perplexity(text)
+    def given_text_assert_average_perplexity_on_word_deletions(self, text, eng_model):
+        px_text = eng_model.avg_perplexity(text)
         one_drop_sentences = self.drop_one_word(text)
 
         px_count = 0
         for sen in one_drop_sentences:
-            px_count += self.english.avg_perplexity(sen)
+            px_count += eng_model.avg_perplexity(sen)
         px_total_avg = px_count / len(one_drop_sentences)
 
         self.assertTrue(px_total_avg > px_text)
@@ -106,5 +105,3 @@ class TestEnglishModel(unittest.TestCase):
             one_drop_sentences.append(sen)
         return one_drop_sentences
 
-if __name__ == '__main__':
-    unittest.main()
