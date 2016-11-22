@@ -118,7 +118,7 @@ class FrEnTranslator(object):
         if src_word == '.':
             return [(0.025, '.')] #FIXME: fix this
         if self.translation_table.get(src_word) == None:
-            return ['[no-translation]']
+            return None
 
         candidates = []
         for trg_word in self.translation_table[src_word]:

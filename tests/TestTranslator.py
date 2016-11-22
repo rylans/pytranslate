@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import unittest
 
 from pytranslate.Translator import Translator
@@ -56,6 +57,37 @@ he eats well'''
         self._verify(trx, 'il mange ici', 'he eats here')
         self._verify(trx, 'qui mange bien', 'who eats well')
         self._verify(trx, 'elle mange bien', 'she eats well')
+
+    def test_word_not_in_text(self):
+        fr_text = 'elle est'
+        en_text = 'she is'
+        trx = self._new_translator(fr_text, en_text, self.english_model)
+        self._verify(trx, 'Il', '[no-translation]')
+        self._verify(trx, 'il est', '[no-translation] is')
+
+    def test_blank_translation(self):
+        fr_text = 'cette dame'
+        en_text = 'this woman'
+        trx = self._new_translator(fr_text, en_text, self.english_model)
+        self._verify(trx, '', '')
+
+    def test_space_translation(self):
+        fr_text = 'cette dame'
+        en_text = 'this woman'
+        trx = self._new_translator(fr_text, en_text, self.english_model)
+        self._verify(trx, ' ', '')
+
+    def test_leading_space_translation(self):
+        fr_text = 'mon ami'
+        en_text = 'my friend'
+        trx = self._new_translator(fr_text, en_text, self.english_model)
+        self._verify(trx, ' mon ami', 'my friend')
+
+    def test_trailing_space_translation(self):
+        fr_text = 'mon ami'
+        en_text = 'my friend'
+        trx = self._new_translator(fr_text, en_text, self.english_model)
+        self._verify(trx, 'mon ami ', 'my friend')
 
     def _verify(self, translator, source_text, expected_translation):
         self.assertTrue(translator.translate(source_text) == expected_translation)

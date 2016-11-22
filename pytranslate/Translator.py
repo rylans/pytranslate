@@ -20,6 +20,8 @@ class Translator(object):
             list: [ (probability_1, translated_word_1), (probability_2, translated_word_2) ... ]
         '''
         list_of_p_trans = self.translation_model.translate_word(source_word, 6, True)
+        if list_of_p_trans == None:
+            return [(0.00001, '[no-translation]')]
         lst = [(p_trans[0]*self.production_model.probability(p_trans[1], prev_word), p_trans[1]) for p_trans in list_of_p_trans]
         return sorted(lst)[::-1]
 
@@ -43,6 +45,9 @@ class Translator(object):
 
     def translate(self, raw_source_text):
         '''Translate source text word-by-word into target language'''
+        raw_source_text = raw_source_text.strip()
+        if raw_source_text == '':
+            return ''
         iteration = 0
         candidates = []
         for source_word in self.translation_model.preprocess(raw_source_text):
