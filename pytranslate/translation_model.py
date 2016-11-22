@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
-'''French to English Translator'''
+'''target language to target language abstract translation model'''
 
 from nltk.align import AlignedSent
 from nltk.align import IBMModel2
 
-class FrEnTranslator(object):
+class TranslationModel(object):
     '''Translation module from French to English
 
     P(a|b) = p(b|a) * p(a) [p(b) ignored since we're maximizing]

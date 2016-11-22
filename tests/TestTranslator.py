@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
 import unittest
 
-from pytranslate.Translator import Translator
-from pytranslate.EnglishModel import EnglishModel
-from pytranslate.FrEnTranslator import FrEnTranslator
+from pytranslate.translator import Translator
+from pytranslate.english_model import EnglishModel
+from pytranslate.translation_model import TranslationModel
 
 class TestTranslator(unittest.TestCase):
     @classmethod
@@ -93,7 +93,7 @@ he eats well'''
         self.assertTrue(translator.translate(source_text) == expected_translation)
 
     def _new_translator(self, fr_text, en_text, english_model):
-        translation_model = FrEnTranslator()
+        translation_model = TranslationModel()
         translation_model.learn_from_text(fr_text, en_text)
         return Translator(translation_model, english_model)
 

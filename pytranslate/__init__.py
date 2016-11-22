@@ -1,4 +1,4 @@
 '''__init__'''
-from pytranslate import EnglishModel
-from pytranslate import FrEnTranslator
-from pytranslate import Translator
+#from pytranslate import EnglishModel
+#from pytranslate import TranslationModel
+#from pytranslate import Translator
