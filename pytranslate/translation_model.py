@@ -2,7 +2,7 @@
 '''target language to target language abstract translation model'''
 
 from nltk.align import AlignedSent
-from nltk.align import IBMModel2
+from nltk.align import IBMModel3
 
 class TranslationModel(object):
     '''Translation module from French to English
@@ -21,6 +21,7 @@ class TranslationModel(object):
     '''
     def __init__(self):
         self.translation_table = None
+        self.fertility_table = None
         self.fr_en_dict = {}
         self.src_words = {}
 
@@ -89,13 +90,20 @@ class TranslationModel(object):
         return (fr_lines, en_lines)
 
     def learn_aligned_text(self, fr_lines, en_lines):
-        '''Learn from IBM2-aligned model of lists of lines of both languages'''
+        '''Learn from IBM-aligned model of lists of lines of both languages'''
         bitext = []
+        bitext_flip = []
         for pair in zip(fr_lines, en_lines):
-            bitext.append(AlignedSent(self.preprocess(pair[0]), self.preprocess(pair[1])))
+            pp0 = self.preprocess(pair[0])
+            pp1 = self.preprocess(pair[1])
+            bitext.append(AlignedSent(pp0, pp1))
+            bitext_flip.append(AlignedSent(pp1, pp0))
             self.learn_aligned_sentence(pair[1], pair[0])
-        ibm2 = IBMModel2(bitext, 5)
-        self.translation_table = ibm2.translation_table
+        ibm = IBMModel3(bitext, 5)
+        self.translation_table = ibm.translation_table
+
+        ibm_flip = IBMModel3(bitext_flip, 5)
+        self.fertility_table = ibm_flip.fertility_table
 
     def learn_aligned_sentence(self, target, source):
         source_words = [w for w in self.preprocess(source)]
@@ -113,6 +121,22 @@ class TranslationModel(object):
             if self.src_words.get(src_word) == None:
                 self.src_words[src_word] = 0
             self.src_words[src_word] += 1
+
+    def fertility(self, src_word):
+        '''Return the fertility table's row for a given word
+
+        Args:
+            src_word (string): The word in the source text
+
+        Returns:
+            tuple: (0.11, 0.5, 0.39)
+        if word has not been seen, then (1/3, 1/3, 1/3)
+        '''
+        f0, f1, f2 = self.fertility_table[0][src_word], \
+                self.fertility_table[1][src_word], \
+                self.fertility_table[2][src_word]
+        total = float(f0 + f1 + f2)
+        return (f0/total, f1/total, f2/total)
 
     def translate_word(self, src_word, top=1, with_probs=False):
         if src_word == '.':
@@ -141,6 +165,34 @@ class TranslationModel(object):
 
 if __name__ == '__main__':
     trx = TranslationModel()
-    trx.learn_from_text('elle va aller\nelle est rouge', 'she wants to go\nshe is red')
-    print trx.translate_word('elle', 5, True)
+    fr_tx= '''elle va aller
+elle est rouge
+elle veut aller avec moi
+il est mon ami
+un chien veut manger le chat
+un ami
+le chien
+elle va manger avec toi
+elles sont les filles
+elles sont avec moi'''
+    en_tx = '''she wants to go
+she is red
+she wants to go with me
+he is my friend
+a dog wants to eat the cat
+a friend
+the dog
+she is going to eat with you
+they are girls
+they are with me'''
 
+    trx.learn_from_text(fr_tx, en_tx)
+    #trx.learn_from_text('elle va aller\nelle est rouge', 'she wants to go\nshe is red')
+    print trx.translate_word('elle', 5, True)
+    print trx.translate_word('va', 5, True)
+    print trx.translate_word('aller', 5, True)
+    print trx.translate_word('manger', 5, True)
+    print trx.translate_word('ami', 5, True)
+    print trx.fertility('manger')
+    print trx.fertility('va')
+    print trx.fertility('aller')

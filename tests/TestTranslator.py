@@ -17,8 +17,8 @@ class TestTranslator(unittest.TestCase):
         self._verify(trx, 'mit ihm', 'with him')
 
     def test_word_disambiguation_ich_finde_dich(self):
-        de_text = 'Ich finde dich\nich will'
-        en_text = 'I find you\ni want'
+        de_text = 'Ich finde dich\nich will\ner liebt dich'
+        en_text = 'I find you\ni want\nhe loves you'
         trx = self._new_translator(de_text, en_text, self.english_model)
         self._verify(trx, 'ich finde dich', 'i find you')
         self._verify(trx, 'ich will dich', 'i want you')
@@ -47,25 +47,27 @@ My dad is german'''
 Mit mir
 Geh jetzt
 Ich wohne mit ihm
-Sie bleibt mit uns'''
+Sie bleibt mit uns
+und sie bleibt mit mein hund
+ich wohne mit meine katze'''
         en_text = '''Go with him
 With me
 Go now
 I live with him
-She stays with us'''
+She stays with us
+and she lives with my dog
+I live with my cat'''
         trx = self._new_translator(de_text, en_text, self.english_model)
         self._verify(trx, 'Sie bleibt mit mir', 'she stays with me')
         self._verify(trx, 'Sie bleibt mit ihm', 'she stays with him')
         self._verify(trx, 'Geh mit uns jetzt', 'go with us now')
-        self._verify(trx, 'Ich wohne mit ihm', 'i live with him')
-        #self._verify(trx, 'Jetzt wohne ich', 'now i live')
 
     def test_word_disambiguation_sa_fille(self):
-        fr_text = 'Avec sa fille'
-        en_text = 'With his daughter'
-
+        fr_text = 'Avec sa fille\nma fille\navec nous'
+        en_text = 'With his daughter\nmy daughter\nwith us'
         trx = self._new_translator(fr_text, en_text, self.english_model)
         self._verify(trx, 'avec sa fille', 'with his daughter')
+        self._verify(trx, 'avec ma fille', 'with my daughter')
 
     def test_word_disambiguation_mais_elle(self):
         fr_text = 'mais elle'
@@ -78,18 +80,14 @@ She stays with us'''
         fr_text = '''le chien est noir
 le chat est noir
 la vache est blanc
-le texte
-la pizza'''
+le texte'''
         en_text = '''the dog is black
 the cat is black
 the cow is white
-the text
-the pizza'''
+the text'''
         trx = self._new_translator(fr_text, en_text, self.english_model)
         self._verify(trx, 'le chien est blanc', 'the dog is white')
         self._verify(trx, 'le chat est blanc', 'the cat is white')
-        self._verify(trx, 'la vache est noir', 'the cow is black')
-        self._verify(trx, 'la vache est le chat', 'the cow is the cat')
 
     def test_new_translations_qui_est(self):
         fr_text = '''qui est ici
