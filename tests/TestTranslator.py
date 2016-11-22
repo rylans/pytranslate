@@ -10,6 +10,38 @@ class TestTranslator(unittest.TestCase):
     def setUpClass(self):
         self.english_model = EnglishModel(['austen-emma.txt', 'melville-moby_dick.txt'])
 
+    def test_word_disambiguation_mit_ihm(self):
+        de_text = 'Mit ihm'
+        en_text = 'With him'
+        trx = self._new_translator(de_text, en_text, self.english_model)
+        self._verify(trx, 'mit ihm', 'with him')
+
+    def test_word_disambiguation_ich_finde_dich(self):
+        de_text = 'Ich finde dich\nich will'
+        en_text = 'I find you\ni want'
+        trx = self._new_translator(de_text, en_text, self.english_model)
+        self._verify(trx, 'ich finde dich', 'i find you')
+        self._verify(trx, 'ich will dich', 'i want you')
+
+    def test_new_translation_de_en_1(self):
+        de_text = '''Ich schreibe auf Deutsch
+Ich schreibe auf Englisch
+Sie ist Chinesisch
+Ich bin mit dir
+Sie ist mit mir
+Mein Vater ist Deutsch'''
+        en_text = '''I write in german
+I write in English
+She is Chinese
+I am with you
+She is with me
+My dad is german'''
+        trx = self._new_translator(de_text, en_text, self.english_model)
+        self._verify(trx, 'Ich schreibe auf Chinesisch', 'i write in chinese')
+        self._verify(trx, 'Sie ist Englisch', 'she is english')
+        self._verify(trx, 'Mein Vater ist Chinesisch', 'my dad is chinese')
+        self._verify(trx, 'Ich schreibe auf Deutsch mit dir', 'i write in german with you')
+
     def test_word_disambiguation_sa_fille(self):
         fr_text = 'Avec sa fille'
         en_text = 'With his daughter'

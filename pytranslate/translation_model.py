@@ -140,7 +140,7 @@ class TranslationModel(object):
         return self.translation_table[src_word][trg_word] * self.src_words[src_word]
 
 if __name__ == '__main__':
-    trx = FrEnTranslator()
+    trx = TranslationModel()
     trx.learn_from_text('elle va aller\nelle est rouge', 'she wants to go\nshe is red')
     print trx.translate_word('elle', 5, True)
 
