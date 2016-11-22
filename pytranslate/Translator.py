@@ -21,7 +21,7 @@ class Translator(object):
         '''
         list_of_p_trans = self.translation_model.translate_word(source_word, 6, True)
         if list_of_p_trans == None:
-            return [(0.00001, '[no-translation]')]
+            return [(0.00001, '[no-translation-' + source_word + ']')]
         lst = [(p_trans[0]*self.production_model.probability(p_trans[1], prev_word), p_trans[1]) for p_trans in list_of_p_trans]
         return sorted(lst)[::-1]
 

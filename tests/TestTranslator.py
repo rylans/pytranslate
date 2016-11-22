@@ -42,6 +42,24 @@ My dad is german'''
         self._verify(trx, 'Mein Vater ist Chinesisch', 'my dad is chinese')
         self._verify(trx, 'Ich schreibe auf Deutsch mit dir', 'i write in german with you')
 
+    def test_new_translation_de_en_2(self):
+        de_text = '''Geh mit ihm
+Mit mir
+Geh jetzt
+Ich wohne mit ihm
+Sie bleibt mit uns'''
+        en_text = '''Go with him
+With me
+Go now
+I live with him
+She stays with us'''
+        trx = self._new_translator(de_text, en_text, self.english_model)
+        self._verify(trx, 'Sie bleibt mit mir', 'she stays with me')
+        self._verify(trx, 'Sie bleibt mit ihm', 'she stays with him')
+        self._verify(trx, 'Geh mit uns jetzt', 'go with us now')
+        self._verify(trx, 'Ich wohne mit ihm', 'i live with him')
+        #self._verify(trx, 'Jetzt wohne ich', 'now i live')
+
     def test_word_disambiguation_sa_fille(self):
         fr_text = 'Avec sa fille'
         en_text = 'With his daughter'
@@ -94,8 +112,8 @@ he eats well'''
         fr_text = 'elle est'
         en_text = 'she is'
         trx = self._new_translator(fr_text, en_text, self.english_model)
-        self._verify(trx, 'Il', '[no-translation]')
-        self._verify(trx, 'il est', '[no-translation] is')
+        self._verify(trx, 'Il', '[no-translation-il]')
+        self._verify(trx, 'il est', '[no-translation-il] is')
 
     def test_blank_translation(self):
         fr_text = 'cette dame'
