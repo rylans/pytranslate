@@ -35,10 +35,21 @@ class Translator(object):
         if len(p_trans) < 3:
             return combos
 
+        # TODO: Do this algorithmically instead of manually
         combos.append((p_trans[0], p_trans[2]))
         combos.append((p_trans[1], p_trans[2]))
         combos.append((p_trans[2], p_trans[0]))
         combos.append((p_trans[2], p_trans[1]))
+
+        if len(p_trans) < 4:
+            return combos
+
+        combos.append((p_trans[0], p_trans[3]))
+        combos.append((p_trans[1], p_trans[3]))
+        combos.append((p_trans[2], p_trans[3]))
+        combos.append((p_trans[3], p_trans[0]))
+        combos.append((p_trans[3], p_trans[1]))
+        combos.append((p_trans[3], p_trans[2]))
 
         return combos
 
@@ -56,11 +67,11 @@ class Translator(object):
         '''
         if prev_word == None:
             prev_word = ''
-        list_of_p_trans = self.translation_model.translate_word(source_word, 4, True)
+        list_of_p_trans = self.translation_model.translate_word(source_word, 6, True)
         phi = self.translation_model.fertility(source_word)
 
         if list_of_p_trans == None:
-            return [(0.00001, '[no-translation-' + source_word + ']')]
+            return [(0.00001, '[no_translation_' + source_word + ']')]
 
         lst = []
         # append fertility=1 candidates

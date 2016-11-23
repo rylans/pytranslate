@@ -110,8 +110,8 @@ he eats well'''
         fr_text = 'elle est'
         en_text = 'she is'
         trx = self._new_translator(fr_text, en_text, self.english_model)
-        self._verify(trx, 'Il', '[no-translation-il]')
-        self._verify(trx, 'il est', '[no-translation-il] is')
+        self._verify(trx, 'Il', '[no_translation_il]')
+        self._verify(trx, 'il est', '[no_translation_il] is')
 
     def test_blank_translation(self):
         fr_text = 'cette dame'

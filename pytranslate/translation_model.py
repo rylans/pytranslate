@@ -62,7 +62,9 @@ class TranslationModel(object):
         period_sep = apostrophe_sep.replace('.', ' .')
         hyphen_sep = period_sep.replace('-', ' ')
         question_sep = hyphen_sep.replace('?', ' ?')
-        return question_sep.split(' ')
+        open_parens = question_sep.replace('(', '( ')
+        close_parens = open_parens.replace(')', ' )')
+        return close_parens.split(' ')
 
     def aligned_text_from_strings(self, fr_string, en_string):
         '''Get aligned sentences from both texts
@@ -71,6 +73,8 @@ class TranslationModel(object):
         '''
         fr_lines = fr_string.split('\n')
         en_lines = en_string.split('\n')
+        fr_lines = [q for q in fr_lines if q != '']
+        en_lines = [q for q in en_lines if q != '']
         assert len(fr_lines) == len(en_lines)
         return (fr_lines, en_lines)
 
@@ -96,6 +100,10 @@ class TranslationModel(object):
         for pair in zip(fr_lines, en_lines):
             pp0 = self.preprocess(pair[0])
             pp1 = self.preprocess(pair[1])
+            if len(pp0) == 0 or len(pp1) == 0:
+                continue
+            if pp0[0] == '' or pp0[1] == '':
+                continue
             bitext.append(AlignedSent(pp0, pp1))
             bitext_flip.append(AlignedSent(pp1, pp0))
             self.learn_aligned_sentence(pair[1], pair[0])
