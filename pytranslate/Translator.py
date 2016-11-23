@@ -7,7 +7,7 @@ class Translator(object):
         self.production_model = production_model
         self.filter_max = 16
         self.null_prior = 0.0007 #FIXME: problem with words being elided too much
-        self.phi2_prior = 0.99 #FIXME: find this naturally
+        self.phi2_prior = 1.0
 
     def _combine_p_trans(self, p_trans1, p_trans2):
         '''Combine the words and probabilities inside both possible translations'''
@@ -41,7 +41,6 @@ class Translator(object):
         combos.append((p_trans[2], p_trans[1]))
 
         return combos
-
 
     def _next_word(self, source_word, prev_word=''):
         '''Translate source word into zero to two words and report probability
