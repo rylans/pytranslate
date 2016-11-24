@@ -6,8 +6,20 @@ from nltk import ngrams
 from numpy.random import choice
 import math
 
+from translation_model import TranslationModel
+
 class EnglishModel(object):
-    '''Generative model of English'''
+    '''Generative model of English
+
+        texts.append(gutenberg.words('bible-kjv.txt'))
+        texts.append(gutenberg.words('whitman-leaves.txt'))
+        texts.append(gutenberg.words('chesterton-thursday.txt'))
+        texts.append(gutenberg.words('austen-emma.txt'))
+        texts.append(gutenberg.words('austen-persuasion.txt'))
+        texts.append(gutenberg.words('austen-sense.txt'))
+        texts.append(gutenberg.words('chesterton-brown.txt'))
+        texts.append(gutenberg.words('melville-moby_dick.txt'))
+    '''
     def __init__(self, gutenberg_files_to_read):
         self.freq_1gram = 0
         self.model_1gram = {}
@@ -29,31 +41,31 @@ class EnglishModel(object):
         print 'p(she hoped) = p(hoped|she)*p(she) = ' + str(p_hoped_given_she * p_she)
         """
 
-    def learn_english(self, gutenbergs):
+    def learn_english(self, sources):
+        if len(sources) == 0:
+            raise Exception("Cannot learn from empty source.")
+        if type(sources) == type(str()):
+            tm = TranslationModel()
+            texts = []
+            for line in sources.split('\n'):
+                texts.append(tm.preprocess(line))
+            self.learn_english_from_list_of_list_of_words(texts)
+        elif type(sources[0]) == type(str()):
+            texts = []
+            for filename in sources:
+                texts.append(gutenberg.words(filename))
+            self.learn_english_from_list_of_list_of_words(texts)
+        else:
+            raise Exception("Cannot learn from this source.")
+
+    def learn_english_from_list_of_list_of_words(self, texts):
         '''
         Learn unigrams and bigrams from the English corpus
         '''
-        texts = []
-
-        for filename in gutenbergs:
-            texts.append(gutenberg.words(filename))
-
-        '''
-        texts.append(gutenberg.words('bible-kjv.txt'))
-        texts.append(gutenberg.words('whitman-leaves.txt'))
-        texts.append(gutenberg.words('chesterton-thursday.txt'))
-        texts.append(gutenberg.words('austen-emma.txt'))
-        texts.append(gutenberg.words('austen-persuasion.txt'))
-        texts.append(gutenberg.words('austen-sense.txt'))
-        texts.append(gutenberg.words('chesterton-brown.txt'))
-        texts.append(gutenberg.words('melville-moby_dick.txt'))
-        '''
-
         for text in texts:
             self.learn_1grams(text)
             self.learn_2grams([gram for gram in ngrams(text, 2)])
             #self.learn_3grams([gram for gram in ngrams(text, 3)])
-
         self.normalize_n1()
         self.normalize_n2()
         #self.normalize_n3()
@@ -222,5 +234,6 @@ class EnglishModel(object):
         return self.perplexity(sentence_words)/length
 
 if __name__ == '__main__':
-    model = EnglishModel(['austen-emma.txt'])
+    model = EnglishModel('she sells sea shells by the sea shore.\nand she sells them fast.')
     model.summary()
+    model = EnglishModel(['austen-emma.txt'])

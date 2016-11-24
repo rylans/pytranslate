@@ -53,8 +53,9 @@ def get_europarl_fr_lines():
 
 def score_fr_en_europarl():
     print "\nFR->EN Europarl:"
-    num_lines = 90
-    num_chars = 40
+    # max lines is 300 at the moment
+    num_lines = 300
+    num_chars = 50
 
     tstart = time.time()
     en_lines = get_europarl_en_lines()
@@ -92,9 +93,9 @@ def score_fr_en_europarl():
         score += scorer.of(trx_en, xen)
     avg_score = float(score)/n
     print "lines: ", num_lines, ", chars: ", num_chars
-    print "Translation score: {:0.2f}".format(avg_score) + " of " + str(n) + " comparions"
+    print "Translation score: {:0.2f}".format(avg_score) + " (of " + str(n) + " comparisons)"
     tend = time.time()
-    print "\t" + tdiff(tstart, tend) + " seconds elapsed."
+    print tdiff(tstart, tend) + " seconds elapsed."
 
 if __name__ == '__main__':
     score_fr_en_europarl()

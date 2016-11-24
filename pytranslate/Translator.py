@@ -1,13 +1,23 @@
 '''Translator class'''
 
+from english_model import EnglishModel
+from translation_model import TranslationModel
+
 class Translator(object):
     '''Combine translation model p(e1|f1) and language model p(e1|e0)'''
     def __init__(self, translation_model, production_model):
         self.translation_model = translation_model
         self.production_model = production_model
         self.filter_max = 16
-        self.null_prior = 0.0007 #FIXME: problem with words being elided too much
+        self.null_prior = 0.000007 #FIXME: problem with words being elided too much
         self.phi2_prior = 1.0
+
+        #FIXME: Refactor this constructor
+        if type(translation_model) == type(str()) and type(production_model) == type(str()):
+            self.production_model = EnglishModel(production_model)
+            tm = TranslationModel()
+            tm.learn_from_text(translation_model, production_model)
+            self.translation_model = tm
 
     def _combine_p_trans(self, p_trans1, p_trans2):
         '''Combine the words and probabilities inside both possible translations'''
@@ -137,3 +147,9 @@ class Translator(object):
                 candidates = self._combine_next_word(candidates, source_word)
             iteration += 1
         return sorted(candidates)[::-1][0][1]
+
+if __name__ == '__main__':
+    fr = 'elle va manger avec moi.\nelle aime toi.\ntu et moi ensemble\njamais.\nje veux manger vite.\nelle va\navec.'
+    en = 'she is going to eat with me.\nshe likes you.\nyou and me together\nnever.\ni want to eat quick.\nshe is going to\nwith.'
+    trx = Translator(fr, en)
+    assert trx.translate('elle va manger avec toi') == 'she is going eat with you'

@@ -5,10 +5,33 @@ from pytranslate.translator import Translator
 from pytranslate.english_model import EnglishModel
 from pytranslate.translation_model import TranslationModel
 
+FR_UDHR_PARTS = \
+        '''Toute personne a droit à un recours effectif
+devant les juridictions nationales compétentes
+contre les actes violant les droits fondamentaux
+qui lui sont reconnus par la constitution ou par la loi.
+Nul ne peut être arbitrairement
+arrêté, détenu ou exilé.
+Toute personne a droit, en pleine égalité.
+Nul ne sera l'objet d'immixtions arbitraires
+dans sa vie privée, sa famille, son domicile ou sa correspondance.'''
+
+EN_UDHR_PARTS = \
+        '''Everyone has the right to an effective remedy
+by the competent national tribunals
+for acts violating the fundamental rights
+granted him by the constitution or by law.
+Nobody shall be arbitrarily
+arrested, detained or exiled.
+Everyone is entitled in full equality.
+No one shall be subjected to arbitrary interference
+with his privacy, family, home or correspondence.'''
+
 class TestTranslator(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.english_model = EnglishModel(['austen-emma.txt', 'melville-moby_dick.txt'])
+        self.udhr_fr_en_trans = self._new_udhr_fr_en_translator()
 
     def test_word_disambiguation_mit_ihm(self):
         de_text = 'Mit ihm'
@@ -137,6 +160,12 @@ he eats well'''
         trx = self._new_translator(fr_text, en_text, self.english_model)
         self._verify(trx, 'mon ami ', 'my friend')
 
+    '''
+    def test_fr_en_udhr_reproduction(self):
+        self._verify(self.udhr_fr_en_trans, \
+                'Toute personne a droit à un recours effectif', 'everyone has the right to an effective')
+    '''
+
     def _verify(self, translator, source_text, expected_translation):
         self.assertTrue(translator.translate(source_text) == expected_translation)
 
@@ -144,6 +173,12 @@ he eats well'''
         translation_model = TranslationModel()
         translation_model.learn_from_text(fr_text, en_text)
         return Translator(translation_model, english_model)
+
+    @classmethod
+    def _new_udhr_fr_en_translator(self):
+        translation_model = TranslationModel()
+        translation_model.learn_from_text(FR_UDHR_PARTS, EN_UDHR_PARTS)
+        return Translator(translation_model, self.english_model)
 
 if __name__ == '__main__':
     unittest.main()
