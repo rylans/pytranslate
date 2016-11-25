@@ -10,7 +10,7 @@ class Translator(object):
         self.translation_model = translation_model
         self.production_model = production_model
         self.filter_max = 16
-        self.null_prior = 0.000007 #FIXME: problem with words being elided too much
+        self.null_prior = 0.00007 #FIXME: problem with words being elided too much
         self.phi2_prior = 1.0
 
         #FIXME: Refactor this constructor

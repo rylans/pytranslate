@@ -30,7 +30,7 @@ with his privacy, family, home or correspondence.'''
 class TestTranslator(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.english_model = EnglishModel(['austen-emma.txt', 'melville-moby_dick.txt'])
+        self.english_model = EnglishModel(['austen-emma.txt'])
         self.udhr_fr_en_trans = self._new_udhr_fr_en_translator()
 
     def test_word_disambiguation_mit_ihm(self):
@@ -134,7 +134,7 @@ he eats well'''
         en_text = 'she is'
         trx = self._new_translator(fr_text, en_text, self.english_model)
         self._verify(trx, 'Il', '[no_translation_il]')
-        self._verify(trx, 'il est', '[no_translation_il] is')
+        self._verify(trx, 'il est', '[no_translation_il]')
 
     def test_blank_translation(self):
         fr_text = 'cette dame'

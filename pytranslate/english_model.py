@@ -26,22 +26,25 @@ class EnglishModel(object):
         self.model_2gram = {}
         self.model_3gram = {}
         self.learn_english(gutenberg_files_to_read)
+        self._bigrams_seen = 0
 
     def summary(self):
         print "seen " + str(self.freq_1gram) + " words."
         print "seen " + str(len(self.model_1gram.keys())) + " unique words."
 
-        """
-        p_she = self.probability('she')
-        p_hoped = self.probability('hoped')
-        p_hoped_given_she = self.probability('hoped', 'she')
-        print 'p(she)= ' + str(p_she)
-        print 'p(hoped)= ' + str(p_hoped)
-        print 'p(hoped | she)= ' + str(p_hoped_given_she)
-        print 'p(she hoped) = p(hoped|she)*p(she) = ' + str(p_hoped_given_she * p_she)
-        """
-
     def learn_english(self, sources):
+        '''Learn a language fluency model from text or a gutenberg filename
+
+        >>> model1 = EnglishModel("She sells sea shells by the sea").model_1gram
+        >>> model1['sea'] > model1['she']
+        True
+
+        >>> model2 = EnglishModel("She sells sea shells by the sea shore").model_2gram
+        >>> model2['sea']['shells']
+        0.5
+        >>> model2['shells']['by']
+        1.0
+        '''
         if len(sources) == 0:
             raise Exception("Cannot learn from empty source.")
         if type(sources) == type(str()):
@@ -196,9 +199,24 @@ class EnglishModel(object):
 
     def probability(self, word, given=''):
         '''
-        Return the probability of the word occuring given the previous word
+        Return the probability of the word occuring given the previous words
 
         The probability shall never be zero
+
+        >>> EnglishModel("She sells sea shells by the sea shore").probability('sea')
+        0.25
+
+        >>> EnglishModel("She sells sea shells by the sea shore").probability('nope')
+        0.04125
+
+        >>> EnglishModel("She sells sea shells by the sea shore ahoy!").probability('sea','nope')
+        0.04125
+
+        >>> EnglishModel("She sells sea shells by the sea shore").probability('sea','the')
+        1.0
+
+        >>> EnglishModel("She sells sea shells by the sea shore").probability('sea','by the')
+        1.0
         '''
         if ' ' in given:
             given = given.split(' ')[-1]
@@ -207,7 +225,7 @@ class EnglishModel(object):
 
         pword = self.probability_nocond(word)
         if self.model_2gram.get(given) == None:
-            return pword
+            return 0.33 / (1 + len(self.model_2gram.keys()))
         else:
             givenp = self.model_2gram[given].get(word)
             if givenp == None:
@@ -233,6 +251,5 @@ class EnglishModel(object):
         return self.perplexity(sentence_words)/length
 
 if __name__ == '__main__':
-    model = EnglishModel('she sells sea shells by the sea shore.\nand she sells them fast.')
-    model.summary()
-    model = EnglishModel(['austen-emma.txt'])
+    import doctest
+    doctest.testmod()
