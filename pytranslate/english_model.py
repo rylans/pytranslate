@@ -9,28 +9,34 @@ import math
 from text_utils import preprocess
 
 class EnglishModel(object):
-    '''Generative model of English
+    '''Generative model of English'''
 
-        texts.append(gutenberg.words('bible-kjv.txt'))
-        texts.append(gutenberg.words('whitman-leaves.txt'))
-        texts.append(gutenberg.words('chesterton-thursday.txt'))
-        texts.append(gutenberg.words('austen-emma.txt'))
-        texts.append(gutenberg.words('austen-persuasion.txt'))
-        texts.append(gutenberg.words('austen-sense.txt'))
-        texts.append(gutenberg.words('chesterton-brown.txt'))
-        texts.append(gutenberg.words('melville-moby_dick.txt'))
-    '''
     def __init__(self, gutenberg_files_to_read):
+        '''Initialize
+
+        >>> EnglishModel('')
+        Traceback (most recent call last):
+            ...
+        Exception: Cannot learn from empty source.
+
+        >>> EnglishModel('word') == None
+        False
+
+        >>> EnglishModel(27)
+        Traceback (most recent call last):
+            ...
+        Exception: Only strings or list of filenames are allowed.
+
+        >>> EnglishModel([]) == None
+        Traceback (most recent call last):
+            ...
+        Exception: Cannot learn from empty source.
+        '''
         self.freq_1gram = 0
         self.model_1gram = {}
         self.model_2gram = {}
         self.model_3gram = {}
         self.learn_english(gutenberg_files_to_read)
-        self._bigrams_seen = 0
-
-    def summary(self):
-        print "seen " + str(self.freq_1gram) + " words."
-        print "seen " + str(len(self.model_1gram.keys())) + " unique words."
 
     def learn_english(self, sources):
         '''Learn a language fluency model from text or a gutenberg filename
@@ -45,8 +51,11 @@ class EnglishModel(object):
         >>> model2['shells']['by']
         1.0
         '''
-        if len(sources) == 0:
-            raise Exception("Cannot learn from empty source.")
+        try:
+            if len(sources) == 0:
+                raise Exception("Cannot learn from empty source.")
+        except TypeError:
+            raise Exception("Only strings or list of filenames are allowed.")
         if type(sources) == type(str()):
             texts = []
             for line in sources.split('\n'):
@@ -223,7 +232,6 @@ class EnglishModel(object):
         if given == '':
             return self.probability_nocond(word)
 
-        pword = self.probability_nocond(word)
         if self.model_2gram.get(given) == None:
             return 0.33 / (1 + len(self.model_2gram.keys()))
         else:
@@ -234,6 +242,9 @@ class EnglishModel(object):
 
     def perplexity(self, sentence_words):
         '''calculate the perplexity of a sentence'''
+        if type(sentence_words) == type(str()):
+            raise Exception("Perplexity expects a list of words")
+
         perplexity_score = 0
         lastword = ''
         for word in sentence_words:
@@ -246,6 +257,15 @@ class EnglishModel(object):
 
         Returns the perplexity of the sentence divided by the number of
         tokens in the sentence.
+
+        >>> m = EnglishModel("She sells sea shells by the sea")
+        >>> m.avg_perplexity(['she', 'sells']) < m.avg_perplexity(['sells', 'she'])
+        True
+        >>> m.avg_perplexity(['she', 'sells','sea']) < m.avg_perplexity(['she', 'sells'])
+        True
+        >>> a,b,c = m.avg_perplexity(['he','shells']), m.avg_perplexity(['she','shells']), m.avg_perplexity(['she','sells'])
+        >>> a > b > c
+        True
         '''
         length = len(sentence_words)
         return self.perplexity(sentence_words)/length
