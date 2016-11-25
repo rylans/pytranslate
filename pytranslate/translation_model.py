@@ -4,6 +4,8 @@
 from nltk.align import AlignedSent
 from nltk.align import IBMModel3
 
+from text_utils import preprocess
+
 class TranslationModel(object):
     '''Translation module from French to English
 
@@ -53,19 +55,6 @@ class TranslationModel(object):
         for src_word in self.src_words.keys():
             self.src_words[src_word] = self.src_words[src_word]/float(src_word_sum)
 
-    def preprocess(self, line):
-        '''Process a line into a list of tokens'''
-        no_newline = line.replace('\n', '')
-        lowline = no_newline.lower()
-        comma_sep = lowline.replace(',', ' ,')
-        apostrophe_sep = comma_sep.replace("'", "' ")
-        period_sep = apostrophe_sep.replace('.', ' .')
-        hyphen_sep = period_sep.replace('-', ' ')
-        question_sep = hyphen_sep.replace('?', ' ?')
-        open_parens = question_sep.replace('(', '( ')
-        close_parens = open_parens.replace(')', ' )')
-        return close_parens.split(' ')
-
     def aligned_text_from_strings(self, fr_string, en_string):
         '''Get aligned sentences from both texts
 
@@ -98,8 +87,8 @@ class TranslationModel(object):
         bitext = []
         bitext_flip = []
         for pair in zip(fr_lines, en_lines):
-            pp0 = self.preprocess(pair[0])
-            pp1 = self.preprocess(pair[1])
+            pp0 = preprocess(pair[0])
+            pp1 = preprocess(pair[1])
             if len(pp0) == 0 or len(pp1) == 0:
                 continue
             if pp0[0] == '' or pp0[1] == '':
@@ -114,8 +103,8 @@ class TranslationModel(object):
         self.fertility_table = ibm_flip.fertility_table
 
     def learn_aligned_sentence(self, target, source):
-        source_words = [w for w in self.preprocess(source)]
-        target_words = [w for w in self.preprocess(target)]
+        source_words = [w for w in preprocess(source)]
+        target_words = [w for w in preprocess(target)]
 
         for source_word in source_words:
             for target_word in target_words:

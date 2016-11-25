@@ -2,6 +2,7 @@
 
 from english_model import EnglishModel
 from translation_model import TranslationModel
+from text_utils import preprocess
 
 class Translator(object):
     '''Combine translation model p(e1|f1) and language model p(e1|e0)'''
@@ -140,7 +141,7 @@ class Translator(object):
             return ''
         iteration = 0
         candidates = []
-        for source_word in self.translation_model.preprocess(raw_source_text):
+        for source_word in preprocess(raw_source_text):
             if iteration == 0:
                 candidates = self._next_word(source_word)
             else:

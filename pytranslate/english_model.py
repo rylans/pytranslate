@@ -6,7 +6,7 @@ from nltk import ngrams
 from numpy.random import choice
 import math
 
-from translation_model import TranslationModel
+from text_utils import preprocess
 
 class EnglishModel(object):
     '''Generative model of English
@@ -45,10 +45,9 @@ class EnglishModel(object):
         if len(sources) == 0:
             raise Exception("Cannot learn from empty source.")
         if type(sources) == type(str()):
-            tm = TranslationModel()
             texts = []
             for line in sources.split('\n'):
-                texts.append(tm.preprocess(line))
+                texts.append(preprocess(line))
             self.learn_english_from_list_of_list_of_words(texts)
         elif type(sources[0]) == type(str()):
             texts = []
