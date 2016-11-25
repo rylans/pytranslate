@@ -1,7 +1,7 @@
 test:
 	python pytranslate/text_utils.py
+	python pytranslate/english_model.py
 	nosetests -v
-	python pytranslate/translator.py
 
 eval:
 	python pytranslate/evaluation.py
