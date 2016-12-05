@@ -1,6 +1,6 @@
 import unittest
 
-from pytranslate.EnglishModel import EnglishModel
+from pytranslate.english_model import EnglishModel
 
 class TestEnglishModel(unittest.TestCase):
     @classmethod
